@@ -120,11 +120,18 @@ method.
 
 All metadata are stored into ./db/*/*.pickle file.
 
-3.2: fast-regression.test.py script:
+3.2: fast-regression-test.py script:
 ------------------------------------
 
 This script simply gets metadata stored in the ./db/*/*.pickle files and
 compares them with the output of the current File version.
+
+In non-exact mode, regressions are detected using the Ratcliff/Obershelp
+pattern recognition implemented by difflib.SequenceMatcher Python module.
+The regression is detected if the ratio returned by the SequenceMatcher is
+lower than 0.7.
+
+In exact mode, the old and new output have to match exactly.
 
 3.3: compare-db.py script:
 --------------------------
@@ -132,3 +139,5 @@ compares them with the output of the current File version.
 This script does the same work as update.db script, but instead of storing
 metadata into ./db directory, it compares them with the metadata already
 stored in ./db directory by previously run update-db.py script.
+
+Comparison is done the same way as in fast-regression-test.py script.
