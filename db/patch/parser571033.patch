@@ -1,0 +1,41 @@
+Index: logrotate-3.7.8/config.c
+===================================================================
+--- logrotate-3.7.8.orig/config.c	2010-03-16 09:34:08.254007417 +0000
++++ logrotate-3.7.8/config.c	2010-03-16 09:42:32.434009264 +0000
+@@ -574,9 +574,34 @@
+ 			    configFile, lineNum);
+ 		    return 1;
+ 		} else if (*start == '\n') {
+-		    lineNum++;
++		    while (isspace(*start) && (*start)) {
++			if (*start == '\n')
++			    lineNum++;
++			start++;
++		    }
++		} else if (
++		    (strncmp(start, "postrotate", 10) == 0) ||
++		    (strncmp(start, "prerotate", 9) == 0) ||
++		    (strncmp(start, "firstrotate", 11) == 0) ||
++		    (strncmp(start, "lastrotate", 10) == 0)
++		    )
++		{
++		    while (*start) {
++			while ((*start != '\n') && (*start))
++			    start++;
++			while (isspace(*start) && (*start)) {
++			    if (*start == '\n')
++				lineNum++;
++			    start++;
++			}
++			if (strncmp(start, "endscript", 9) == 0) {
++			    start += 9;
++			    break;
++			}
++		    }
++		} else {
++		    start++;
+ 		}
+-		start++;
+ 	    }
+ 	    start++;
+ 

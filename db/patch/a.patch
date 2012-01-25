@@ -1,0 +1,20 @@
+--- file-4.14/src/magic.c.debian	2005-06-25 17:52:14.000000000 +0200
++++ file-4.14/src/magic.c	2005-07-14 09:43:18.000000000 +0200
+@@ -213,7 +213,7 @@
+ 	int	fd = 0;
+ 	int	rv = -1;
+ 	unsigned char *buf;
+-	struct stat	sb;
++	struct stat	sb, *st = &sb;
+ 	ssize_t nbytes = 0;	/* number of bytes read from a datafile */
+ 
+ 	/*
+@@ -227,7 +227,7 @@
+ 	if (file_reset(ms) == -1)
+ 		goto done;
+ 
+-	switch (file_fsmagic(ms, inname, &sb)) {
++	switch (file_fsmagic(ms, inname, st)) {
+ 	case -1:
+ 		goto done;
+ 	case 0:
