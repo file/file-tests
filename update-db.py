@@ -4,18 +4,18 @@ from pyfile import *
 from pyfile.progressbar import ProgressBar
 from pyfile.threadpool import *
 
-def update_all_files(file_binary = 'file', magdir = 'Magdir'):
+def update_all_files(file_name = 'file', magdir = 'Magdir'):
 	pool = ThreadPool(4)
 
-	split_patterns(magdir, file_binary)
-	compile_patterns(file_binary)
-	compiled = is_compilation_supported(file_binary)
+	split_patterns(magdir, file_name)
+	compile_patterns(file_name)
+	compiled = is_compilation_supported(file_name)
 
 	entries = get_stored_files("db")
 	prog = ProgressBar(0, len(entries), 50, mode='fixed', char='#')
 
 	def store_mimedata(data):
-		metadata = get_full_metadata(data[0], file_binary, compiled)
+		metadata = get_full_metadata(data[0], file_name, compiled)
 		set_stored_metadata(data[0], metadata)
 		return data[1]
 	
@@ -33,19 +33,21 @@ def update_all_files(file_binary = 'file', magdir = 'Magdir'):
 	pool.joinAll()
 	print ''
 
-file_binary = 'file'
+file_name = 'file'
 magdir = "Magdir"
 
 if len(sys.argv) == 3:
-	magdir = sys.argv[1]
-	file_binary = sys.argv[2]
-elif len(sys.argv) == 2 and sys.argv[1] == "-h":
+	magdir = sys.argv[2]
+	file_name = sys.argv[1]
+elif (len(sys.argv) == 2 and sys.argv[1] == "-h") or len(sys.argv) == 1:
 	print "Updates database."
-	print sys.argv[0] + " [path_to_magdir_directory] [file_binary]"
+	print sys.argv[0] + " <version_name> [path_to_magdir_directory]"
 	print "  Default path_to_magdir_directory='Magdir'"
-	print "  Default file_binary='file'"
+	print "  Default version_name='file'"
 	print "Examples:"
-	print "  " + sys.argv[0] + ";"
-	print "  " + sys.argv[0] + " file-5.04/magic/Magdir file-5.04/src/file;"
+	print "  " + sys.argv[0] + " file-5.07;"
+	print "  " + sys.argv[0] + "file-5.04-my-version file-5.04/magic/Magdir;"
 	sys.exit(0)
-update_all_files(file_binary, magdir)
+
+file_name = sys.argv[1]
+update_all_files(file_name, magdir)

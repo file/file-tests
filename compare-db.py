@@ -6,23 +6,23 @@ from pyfile.threadpool import *
 import mutex
 
 
-def compare_all_files(file_binary = 'file', magdir = 'Magdir'):
+def compare_all_files(file_name = 'file', magdir = 'Magdir', exact = False):
 	pool = ThreadPool(4)
 	m = mutex.mutex()
 
-	split_patterns(magdir, file_binary)
-	compile_patterns(file_binary)
-	compiled = is_compilation_supported(file_binary)
+	split_patterns(magdir, file_name)
+	compile_patterns(file_name)
+	compiled = is_compilation_supported(file_name)
 
 	entries = get_stored_files("db")
 	prog = ProgressBar(0, len(entries), 50, mode='fixed', char='#')
 
 	def store_mimedata(data):
-		metadata = get_full_metadata(data[0], file_binary, compiled)
+		metadata = get_full_metadata(data[0], file_name, compiled)
 		stored_metadata = get_stored_metadata(data[0])
 		text = "PASS " + data[0]
-		if is_regression(stored_metadata, metadata):
-			text = "FAIL " + data[0] + "\n" + get_diff(stored_metadata, metadata)
+		if is_regression(stored_metadata, metadata, exact):
+			text = "FAIL " + data[0] + "\n" + get_diff(stored_metadata, metadata, exact)
 		return text
 
 	def data_print(data):
@@ -43,19 +43,29 @@ def compare_all_files(file_binary = 'file', magdir = 'Magdir'):
 	pool.joinAll()
 	print ''
 
-file_binary = 'file'
+file_name = 'file'
 magdir = "Magdir"
+exact = False
 
-if len(sys.argv) == 3:
-	file_binary = sys.argv[2]
-	magdir = sys.argv[1]
-elif len(sys.argv) == 2 and sys.argv[1] == "-h":
-	print "Compares files in database with output of particular file binary."
-	print sys.argv[0] + " [path_to_magdir_directory] [file_binary]"
+if len(sys.argv) >= 3:
+	file_name = sys.argv[1]
+	magdir = sys.argv[2]
+elif (len(sys.argv) == 2 and sys.argv[1] == "-h") or len(sys.argv) == 1:
+	print "Compares files in database with output of current file binary."
+	print sys.argv[0] + " [path_to_magdir_directory] [file_name]"
 	print "  Default path_to_magdir_directory='Magdir'"
-	print "  Default file_binary='file'"
+	print "  Default file_name='file'"
 	print "Examples:"
-	print "  " + sys.argv[0] + ";"
-	print "  " + sys.argv[0] + " file-5.04/magic/Magdir file-5.04/src/file;"
+	print "  " + sys.argv[0] + " file-5.07;"
+	print "  " + sys.argv[0] + " file-5.07 file-5.04/magic/Magdir;"
 	sys.exit(0)
-compare_all_files(file_binary, magdir)
+
+if magdir == "exact":
+	exact = True
+	magdir = "Magdir"
+
+if len(sys.argv) == 4 and sys.argv[3] == "exact":
+	exact = True
+
+file_name = sys.argv[1]
+compare_all_files(file_name, magdir, exact)

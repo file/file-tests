@@ -1,0 +1,134 @@
+==============================================================================
+================== File-tests - File regressions detection ===================
+==============================================================================
+
+Author: Jan Kaluza <jkaluza@redhat.com>
+
+
+
+1) WHY IS IT USEFUL?
+====================
+
+It's not possible to check the regressions between File releases manually and
+unfortunatelly File can't work 100% and even small change in one magic pattern
+can cause big regression.
+
+This project aims to make comparing outputs of different File versions easier
+and provides database of files in different formats.
+
+
+
+2) HOW TO USE IT?
+=================
+
+This howto presumes that CWD is the root of the git repository (the same
+directory as this README file is in).
+
+2.1: Prepare the Magdir:
+------------------------
+
+You have to provide the Magdir directory with magic patterns from the File
+sources of the exactly the same File version as you want to test. This is
+needed to identify particular magic pattern responsible for the particular
+file detection.
+
+You can just copy Magdir into the CWD:
+
+$ cp /path/to/file/magic/Magdir ./
+
+2.2: Update the database with the current/old File version:
+-----------------------------------------------------------
+
+Note that this whole procedure needs 3.5GB free space, because
+patterns are splitted and compiled by file individually. See
+HOW DOES IT WORK section for more details.
+
+$ python update-db.py <unique-name> [path_to_magdir]
+
+So in our case for example:
+
+$ python update-db.py file-5.07 Magdir
+
+2.3: Install new File version you want to test regressions against:
+-------------------------------------------------------------------
+
+$ sudo rpm -U my-file.prm my-file-libs.rpm ...
+
+2.4: Run fast-regression-test:
+------------------------------
+
+Fast regression test tests the output of the currently installed File and
+compares it to the one stored in db/*/*.pickle files. If there's a significant
+difference (see HOW DOES IT WORK) between the output, it's showed as FAIL.
+
+$ python fast-regression-test.py
+
+If you run this test with "exact" argument, particular test will FAIL even
+if there's small change in the File output.
+
+2.5: Identify patterns causing the regressions:
+-----------------------------------------------
+
+With compare-db.py script, you can get the patterns causing the regression.
+At first you have to prepare the Magdir from the current File version as
+mentioned in step "2.1: Prepare the Magdir".
+
+Note that this whole procedure needs 3.5GB free space, because
+patterns are splitted and compiled by file individually. See
+HOW DOES IT WORK section for more details.
+
+$ python compare-db.py <unique-name> [path_to_magdir]
+
+So in our case for example:
+
+$ python compare-db.py file-5.10 Magdir
+
+If you run this test with "exact" argument, particular test will FAIL even
+if there's small change in the File output:
+
+$ python compare-db.py file-5.10 Magdir exact
+or
+$ python compare-db.py file-5.10 exact
+
+
+
+3) HOW DOES IT WORK?
+====================
+
+There is database of files in "db" directory.
+
+3.1: update.db script:
+----------------------
+
+At first, this script splits all the patterns from Magdir directory into
+separated files, so there is one magic pattern per file. Those files are
+stored into ./.mgc_temp/<file_name_hash>/output.
+
+After that, patterns are compiled using this algorithm:
+
+N = 0
+pattern_to_compile = ""
+for every pattern:
+	pattern_to_compile += pattern
+	compile pattern_to_compile
+	save it as ./.mgc_temp/<file_name_hash>/.find-magic.tmp.N
+	N++
+
+Then all files in the db directory are detected. During the detection,
+particular pattern responsible for detection is found using the bisection
+method.
+
+All metadata are stored into ./db/*/*.pickle file.
+
+3.2: fast-regression.test.py script:
+------------------------------------
+
+This script simply gets metadata stored in the ./db/*/*.pickle files and
+compares them with the output of the current File version.
+
+3.3: compare-db.py script:
+--------------------------
+
+This script does the same work as update.db script, but instead of storing
+metadata into ./db directory, it compares them with the metadata already
+stored in ./db directory by previously run update-db.py script.

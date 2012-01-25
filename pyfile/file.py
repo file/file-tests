@@ -17,12 +17,12 @@ def mkdir_p(path):
 		else: raise
 
 def get_file_output(filename, file_binary = "file"):
-	pipe = Popen(file_binary + " -b " + filename, shell=True, bufsize=4096, stdout=PIPE).stdout
+	pipe = Popen("file -b " + filename, shell=True, bufsize=4096, stdout=PIPE).stdout
 	output = pipe.read()
 	return output
 
 def get_file_mime(filename, file_binary = "file"):
-	pipe = Popen(file_binary + " -ib " + filename, shell=True, bufsize=4096, stdout=PIPE).stdout
+	pipe = Popen("file -ib " + filename, shell=True, bufsize=4096, stdout=PIPE).stdout
 	output = pipe.read()
 	return output
 
@@ -32,8 +32,8 @@ def get_simple_metadata(filename, file_binary = "file"):
 	metadata['mime'] =  get_file_mime(filename, file_binary)
 	return metadata
 
-def split_patterns(magdir = "Magdir", file_binary = "file"):
-	FILE_BINARY_HASH = hashlib.sha224(file_binary).hexdigest()
+def split_patterns(magdir = "Magdir", file_name = "file"):
+	FILE_BINARY_HASH = hashlib.sha224(file_name).hexdigest()
 	outputdir = ".mgc_temp/" + FILE_BINARY_HASH + "/output"
 	mkdir_p(outputdir)
 	pattern_id = 0
@@ -76,8 +76,8 @@ def split_patterns(magdir = "Magdir", file_binary = "file"):
 		fd.close()
 	print ''
 
-def compile_patterns(file_binary = "file"):
-	FILE_BINARY_HASH = hashlib.sha224(file_binary).hexdigest()
+def compile_patterns(file_name = "file"):
+	FILE_BINARY_HASH = hashlib.sha224(file_name).hexdigest()
 	magdir = ".mgc_temp/" + FILE_BINARY_HASH + "/output"
 	files = os.listdir(magdir)
 	files.sort()
@@ -96,7 +96,7 @@ def compile_patterns(file_binary = "file"):
 			#os.chdir(".mgc_temp")
 			#print "cp .mgc_temp/.find-magic.tmp .mgc_temp/.find-magic.tmp." + str(i) + ";" + FILE_BINARY + " -C -m .mgc_temp/.find-magic.tmp." + str(i) + ";"
 			#mv .find-magic.tmp." + str(i) + ".mgc .mgc_temp/;
-			os.system("cp .mgc_temp/" + FILE_BINARY_HASH + "/.find-magic.tmp .mgc_temp/" + FILE_BINARY_HASH + "/.find-magic.tmp." + str(i) + ";" + file_binary + " -C -m .mgc_temp/" + FILE_BINARY_HASH + "/.find-magic.tmp." + str(i) + ";")
+			os.system("cp .mgc_temp/" + FILE_BINARY_HASH + "/.find-magic.tmp .mgc_temp/" + FILE_BINARY_HASH + "/.find-magic.tmp." + str(i) + ";file -C -m .mgc_temp/" + FILE_BINARY_HASH + "/.find-magic.tmp." + str(i) + ";")
 			if os.path.exists(".find-magic.tmp." + str(i) + ".mgc"):
 				os.system("mv .find-magic.tmp." + str(i) + ".mgc .mgc_temp/" + FILE_BINARY_HASH)
 			#os.chdir("..")
@@ -105,13 +105,13 @@ def compile_patterns(file_binary = "file"):
 		sys.stdout.flush()
 	print ""
 
-def get_full_metadata(infile, file_binary = "file", compiled = True):
+def get_full_metadata(infile, file_name = "file", compiled = True):
 	COMPILED_SUFFIX = ".mgc"
 	if not compiled:
 		COMPILED_SUFFIX = ""
-	FILE_BINARY_HASH = hashlib.sha224(file_binary).hexdigest()
+	FILE_BINARY_HASH = hashlib.sha224(file_name).hexdigest()
 	magdir = ".mgc_temp/" + FILE_BINARY_HASH + "/output"
-	FILE_BINARY = file_binary;
+	FILE_BINARY = "file";
 	files = os.listdir(magdir)
 	files.sort()
 	history = []
@@ -172,7 +172,7 @@ def get_full_metadata(infile, file_binary = "file", compiled = True):
 
 def is_compilation_supported(file_binary = "file"):
 	FILE_BINARY_HASH = hashlib.sha224(file_binary).hexdigest()
-	if os.system(file_binary + " /bin/sh -m .mgc_temp/" + FILE_BINARY_HASH + "/.find-magic.tmp.0.mgc > /dev/null") != 0:
+	if os.system("file /bin/sh -m .mgc_temp/" + FILE_BINARY_HASH + "/.find-magic.tmp.0.mgc > /dev/null") != 0:
 		print ''
 		print "This file version doesn't support compiled patterns => they won't be used"
 		return False

@@ -20,14 +20,18 @@ def set_stored_metadata(filename, metadata):
 	pickle.dump(metadata, f)
 	f.close()
 
-def is_regression(m1, m2, ratio = 0.7):
+def is_regression(m1, m2, exact = False, ratio = 0.7):
 	if m1['output'] != m2['output']:
 		# previous file didn't detect it, so we hope new output is ok
 		if not m1['output'].endswith("data\n"):
-			r = difflib.SequenceMatcher(None, m1['output'], m2['output']).ratio()
-			if (r < ratio):
-				#print >> sys.stderr, "Expected:%sGot     :%s" % (m2['output'], m1['output'])
-				return True
+			if exact:
+				if m1['output'] != m2['output']:
+					return True
+			else:
+				r = difflib.SequenceMatcher(None, m1['output'], m2['output']).ratio()
+				if (r < ratio):
+					#print >> sys.stderr, "Expected:%sGot     :%s" % (m2['output'], m1['output'])
+					return True
 
 	mime = m2['mime'].split(":")[-1].split(";")[0].strip()
 	old_mime = m1['mime'].split(":")[-1].split(";")[0].strip()
@@ -47,14 +51,18 @@ def is_regression(m1, m2, ratio = 0.7):
 		return True
 	return False;
 
-def get_diff(m1, m2, ratio = 0.7):
+def get_diff(m1, m2, exact = False, ratio = 0.7):
 	text = ""
 	if m1['output'] != m2['output']:
 		# previous file didn't detect it, so we hope new output is ok
 		if not m1['output'].endswith("data\n"):
-			r = difflib.SequenceMatcher(None, m1['output'], m2['output']).ratio()
-			if (r < ratio):
-				text = "Expected :%sGot      :%s" % (m1['output'], m2['output'])
+			if exact:
+				if m1['output'] != m2['output']:
+					text = "Expected :%sGot      :%s" % (m1['output'], m2['output'])
+			else:
+				r = difflib.SequenceMatcher(None, m1['output'], m2['output']).ratio()
+				if (r < ratio):
+					text = "Expected :%sGot      :%s" % (m1['output'], m2['output'])
 
 	mime = m2['mime'].split(":")[-1].split(";")[0].strip()
 	old_mime = m1['mime'].split(":")[-1].split(";")[0].strip()
@@ -72,7 +80,7 @@ def get_diff(m1, m2, ratio = 0.7):
 				want_mime_diff = True
 		want_mime_diff = True
 	if want_mime_diff:
-		text = "Expected :%sGot      :%s" % (m1['mime'], m2['mime'])
+		text += "Expected :%sGot      :%s" % (m1['mime'], m2['mime'])
 
 	if text != "":
 		if m1.has_key('pattern') and m2.has_key('pattern') and m1['pattern'] != "" and m2['pattern'] != "":

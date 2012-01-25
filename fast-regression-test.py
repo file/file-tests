@@ -6,7 +6,7 @@ import mutex
 
 ret = 0
 
-def test_all_files():
+def test_all_files(exact = False):
 	pool = ThreadPool(4)
 	m = mutex.mutex()
 
@@ -16,8 +16,8 @@ def test_all_files():
 		metadata = get_simple_metadata(filename)
 		stored_metadata = get_stored_metadata(filename)
 		text = "PASS " + filename
-		if is_regression(stored_metadata, metadata):
-			text = "FAIL " + filename + "\n" + get_diff(stored_metadata, metadata)
+		if is_regression(stored_metadata, metadata, exact):
+			text = "FAIL " + filename + "\n" + get_diff(stored_metadata, metadata, exact)
 		return text
 
 	def data_print(data):
@@ -39,4 +39,8 @@ def test_all_files():
 	print ''
 	return ret
 
-sys.exit(test_all_files())
+exact = False
+if len(sys.argv) == 2 and sys.argv[1] == "exact":
+	exact = True
+
+sys.exit(test_all_files(exact))
