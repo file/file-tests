@@ -10,8 +10,8 @@ Author: Jan Kaluza <jkaluza@redhat.com>
 ====================
 
 It's not possible to check the regressions between File releases manually and
-unfortunatelly File can't work 100% and even small change in one magic pattern
-can cause big regression.
+unfortunatelly File can't work 100% and even a small change in one magic pattern
+can cause a big regression.
 
 This project aims to make comparing outputs of different File versions easier
 and provides database of files in different formats.

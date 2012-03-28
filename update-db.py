@@ -64,7 +64,7 @@ elif (len(sys.argv) == 2 and sys.argv[1] == "-h") or len(sys.argv) == 1:
 	print "  Default version_name='file'"
 	print "Examples:"
 	print "  " + sys.argv[0] + " file-5.07;"
-	print "  " + sys.argv[0] + "file-5.04-my-version file-5.04/magic/Magdir;"
+	print "  " + sys.argv[0] + " file-5.04-my-version file-5.04/magic/Magdir;"
 	sys.exit(0)
 
 file_name = sys.argv[1]
