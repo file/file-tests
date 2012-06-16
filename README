@@ -34,7 +34,7 @@ file detection.
 
 You can just copy Magdir into the CWD:
 
-$ cp /path/to/file/magic/Magdir ./
+$ cp -pr /path/to/file/magic/Magdir ./
 
 2.2: Update the database with the current/old File version:
 -----------------------------------------------------------
