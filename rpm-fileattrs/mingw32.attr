@@ -1,0 +1,3 @@
+%__mingw32_provides	%{_rpmconfigdir}/mingw-find-provides.sh mingw32
+%__mingw32_requires	%{_rpmconfigdir}/mingw-find-requires.sh mingw32
+%__mingw32_path		^%{mingw32_prefix}/.*\.([Dd][Ll][Ll]|[Ee][Xx][Ee])$

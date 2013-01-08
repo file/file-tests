@@ -1,0 +1,2 @@
+%__gstreamer_provides	%{_rpmconfigdir}/gstreamer.prov
+%__gstreamer_path	^%{_libdir}/gstreamer-.*/.*\.so$

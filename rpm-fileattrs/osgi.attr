@@ -1,0 +1,4 @@
+%__osgi_provides	%{_rpmconfigdir}/osgi.prov
+%__osgi_requires	%{_rpmconfigdir}/osgi.req
+%__osgi_path	^(.*\.jar|((%{_libdir}|%{_datadir}).*/MANIFEST.MF))
+

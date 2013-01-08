@@ -36,7 +36,7 @@ def test_attr(attr):
 	path = None
 	f = open(attr)
 	for line in f.readlines():
-		if line.split()[0].endswith("_magic"):
+		if len(line.split()) != 0 and line.split()[0].endswith("_magic"):
 			regex = line[line.find("_magic") + 6:].strip()
 			regex = regex.replace("(", "\\(")
 			regex = regex.replace(")", "\\)")

@@ -1,0 +1,2 @@
+%__pkgconfig_provides	%{_rpmconfigdir}/scldeps.sh --provides %{scl}
+%__pkgconfig_path	^%{_scl_prefix}/.*$

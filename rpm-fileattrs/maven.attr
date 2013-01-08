@@ -1,0 +1,4 @@
+%__maven_provides	%{_rpmconfigdir}/maven.prov
+#%__maven_requires	%{_rpmconfigdir}/maven.req
+%__maven_path	^%{_datadir}/maven-fragments/.*
+

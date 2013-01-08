@@ -1,0 +1,3 @@
+%__psdriver_provides	%{_rpmconfigdir}/postscriptdriver.prov
+%__psdriver_path	^(/usr/lib/cups/driver/.*|%{_datadir}/cups/drv/.*\.drv)$
+%__psdriver_magic	^PPD file.*$
