@@ -1,0 +1,120 @@
+%&mex
+% Reference Card for GNU Emacs
+
+% Copyright (C) 1999, 2001-2012  Free Software Foundation, Inc.
+
+% Author: Stephen Gildea <gildea@stop.mail-abuse.org>
+% Polish translation: W{\l}odek Bzyl <matwb@univ.gda.pl>
+
+% This file is part of GNU Emacs.
+
+% GNU Emacs is free software: you can redistribute it and/or modify
+% it under the terms of the GNU General Public License as published by
+% the Free Software Foundation, either version 3 of the License, or
+% (at your option) any later version.
+
+% GNU Emacs is distributed in the hope that it will be useful,
+% but WITHOUT ANY WARRANTY; without even the implied warranty of
+% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+% GNU General Public License for more details.
+
+% You should have received a copy of the GNU General Public License
+% along with GNU Emacs.  If not, see <http://www.gnu.org/licenses/>.
+
+
+% This file is intended to be processed by plain TeX (TeX82).
+%
+% The final reference card has six columns, three on each side.
+% This file can be used to produce it in any of three ways:
+% 1 column per page
+%    produces six separate pages, each of which needs to be reduced to 80%.
+%    This gives the best resolution.
+% 2 columns per page
+%    produces three already-reduced pages.
+%    You will still need to cut and paste.
+% Which mode to use is controlled by setting \columnsperpage.
+
+% Translated into Polish language by W{\l}odek Bzyl (matwb@univ.gda.pl)
+% who also added new section on `Dired' and added info about Polish
+% support in Emacs to section `International Character Sets'.
+
+% This file uses macros and fonts defined in the mex format.
+% These macros and fonts are part of a current WEB2C
+% distribution of TeX, for example teTeX (unix) fpTeX (windows).
+% TeTeX comes with texconfig utility which could be used in
+% particular to generate formats. Just run it and follow instructions.
+%
+% Note that the original Emacs refcard.tex uses macros and fonts
+% defined in plain format. This file uses mex format which is
+% a Polish adaptation of plain.
+
+
+%**start of header
+
+\ifx\MeX\undefined
+  \errmessage{This file requires `mex' format to be typeset correctly.
+    See head of this file for the comments how to generate mex format}
+ \endinput
+\else
+  \prefixing
+\fi
+
+% This file can be printed with 1, or 2 columns per page.
+% Specify how many you want here.
+\newcount\columnsperpage
+\columnsperpage=2
+
+% PDF output layout.  0 for A4, 1 for letter (US), a `l' is added for
+% a landscape layout.
+\input pdflayout.sty
+\pdflayout=(0)
+
+\def\versionemacs{24}           % version of Emacs this is for
+\def\year{2012}                 % latest copyright year
+
+% Nothing else needs to be changed.
+
+\def\shortcopyrightnotice{\vskip 1ex plus 2 fill
+  \centerline{\small \copyright\ \year\ Free Software Foundation, Inc.
+  Permissions on back.}}
+
+\def\copyrightnotice{
+\vskip 1ex plus 2 fill\begingroup\small
+\centerline{Copyright \copyright\ \year\ Free Software Foundation, Inc.}
+\centerline{dla GNU Emacsa \versionemacs}
+\centerline{projekt Stephen Gildea}
+\centerline{t/lumaczenie W/lodek Bzyl}
+
+Permission is granted to make and distribute copies of
+this card provided the copyright notice and this permission notice
+are preserved on all copies.
+
+For copies of the GNU Emacs manual, see:
+
+{\tt http:////www.gnu.org//software//emacs//\#Manuals}
+\endgroup}
+
+% make \bye not \outer so that the \def\bye in the \else clause below
+% can be scanned without complaint.
+\def\bye{\par\vfill\supereject\end}
+
+\newdimen\intercolumnskip	%horizontal space between columns
+\newbox\columna			%boxes to hold columns already built
+\newbox\columnb
+
+\def\ncolumns{\the\columnsperpage}
+
+\message{[\ncolumns\space
+  column\if 1\ncolumns\else s\fi\space per page]}
+
+\def\scaledmag#1{ scaled \magstep #1}
+
+% This multi-way format was designed by Stephen Gildea October 1986.
+% Note that the 1-column format is fontfamily-independent.
+\if 1\ncolumns			%one-column format uses normal size
+  \hsize 4in
+  \vsize 10in
+%  \voffset -.7in
+  \font\titlefont=\fontname\tenbf \scaledmag3
+  \font\headingfont=\fontname\tenbf \scaledmag2
+  \font\s
