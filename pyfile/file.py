@@ -79,6 +79,7 @@ def split_patterns(magdir = "Magdir", file_name = "file"):
 				buff = ""
 				in_pattern = True
 				pattern_id += 1
+				buff += "#" + f +"\n"
 				buff += "# Automatically generated from:\n"
 				buff += "#" + f + ":" + str(i) + "\n"
 				buff += line
@@ -98,25 +99,34 @@ def compile_patterns(file_name = "file"):
 	FILE_BINARY_HASH = hashlib.sha224(file_name).hexdigest()
 	magdir = ".mgc_temp/" + FILE_BINARY_HASH + "/output"
 	files = os.listdir(magdir)
-	files.sort()
+	files.sort(key=lambda x: [int(x)])
 	mkdir_p(".mgc_temp")
 	mkdir_p(".mgc_temp/" + FILE_BINARY_HASH)
+	mkdir_p(".mgc_temp/" + FILE_BINARY_HASH + "/tmp")
 	prog = ProgressBar(0, len(files), 50, mode='fixed', char='#')
+
 	for i,f in enumerate(files):
 		if not os.path.exists(".mgc_temp/" + FILE_BINARY_HASH + "/.find-magic.tmp." + str(i) + ".mgc"):
 			fd = open(os.path.join(magdir, f), "r")
 			buf = fd.read()
 			fd.close()
-			tmp = open(".mgc_temp/" + FILE_BINARY_HASH + "/.find-magic.tmp", "a")
+			x = buf.split("\n")[0][1:len(buf.split("\n")[0])]
+			tmp = open(os.path.join(".mgc_temp/" + FILE_BINARY_HASH + "/tmp/" + x), "a")
 			tmp.write(buf)
 			tmp.flush()
 			tmp.close()
+			##tmp = open(".mgc_temp/" + FILE_BINARY_HASH + "/.find-magic.tmp", "a")
+			##tmp.write(buf)
+			##tmp.flush()
+			##tmp.close()
 			#os.chdir(".mgc_temp")
 			#print "cp .mgc_temp/.find-magic.tmp .mgc_temp/.find-magic.tmp." + str(i) + ";" + FILE_BINARY + " -C -m .mgc_temp/.find-magic.tmp." + str(i) + ";"
 			#mv .find-magic.tmp." + str(i) + ".mgc .mgc_temp/;
-			os.system("cp .mgc_temp/" + FILE_BINARY_HASH + "/.find-magic.tmp .mgc_temp/" + FILE_BINARY_HASH + "/.find-magic.tmp." + str(i) + ";file -C -m .mgc_temp/" + FILE_BINARY_HASH + "/.find-magic.tmp." + str(i) + ";")
-			if os.path.exists(".find-magic.tmp." + str(i) + ".mgc"):
-				os.system("mv .find-magic.tmp." + str(i) + ".mgc .mgc_temp/" + FILE_BINARY_HASH)
+			
+			##os.system("cp .mgc_temp/" + FILE_BINARY_HASH + "/.find-magic.tmp .mgc_temp/" + FILE_BINARY_HASH + "/.find-magic.tmp." + str(i) + ";file -C -m .mgc_temp/" + FILE_BINARY_HASH + "/.find-magic.tmp." + str(i) + ";")
+			os.system("file -C -m .mgc_temp/" + FILE_BINARY_HASH + "/tmp")
+			if os.path.exists("tmp.mgc"):
+				os.system("mv tmp.mgc .mgc_temp/" + FILE_BINARY_HASH + "/.find-magic.tmp." + str(i) + ".mgc")
 			#os.chdir("..")
 		prog.increment_amount()
 		print prog, "Compiling patterns", '\r',
@@ -131,7 +141,7 @@ def get_full_metadata(infile, file_name = "file", compiled = True):
 	magdir = ".mgc_temp/" + FILE_BINARY_HASH + "/output"
 	FILE_BINARY = "file";
 	files = os.listdir(magdir)
-	files.sort()
+	files.sort(key=lambda x: [int(x)])
 	history = []
 	tlist = []
 	mkdir_p(".mgc_temp")
@@ -159,7 +169,7 @@ def get_full_metadata(infile, file_name = "file", compiled = True):
 		else:
 			b = i
 			b_out = last
-		
+
 		if i == a + (b - a) / 2:
 			if b_out != last:
 				i += 1
