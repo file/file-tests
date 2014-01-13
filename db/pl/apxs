@@ -1,0 +1,86 @@
+#!/usr/bin/perl -w
+#
+# Licensed to the Apache Software Foundation (ASF) under one or more
+# contributor license agreements.  See the NOTICE file distributed with
+# this work for additional information regarding copyright ownership.
+# The ASF licenses this file to You under the Apache License, Version 2.0
+# (the "License"); you may not use this file except in compliance with
+# the License.  You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+require 5.004;
+use strict;
+package apxs;
+
+##
+##  Configuration
+##
+
+my %config_vars = ();
+
+my $installbuilddir = "/opt/rh/httpd24/root/usr/lib64/httpd/build";
+get_config_vars("$installbuilddir/config_vars.mk",\%config_vars);
+
+# read the configuration variables once
+
+my $prefix         = get_vars("prefix");
+my $CFG_PREFIX     = $prefix;
+my $exec_prefix    = get_vars("exec_prefix");
+my $datadir        = get_vars("datadir");
+my $localstatedir  = get_vars("localstatedir");
+my $CFG_TARGET     = get_vars("progname");
+my $CFG_SYSCONFDIR = get_vars("sysconfdir");
+my $CFG_CFLAGS     = join ' ', map { get_vars($_) }
+  qw(SHLTCFLAGS CFLAGS NOTEST_CPPFLAGS EXTRA_CPPFLAGS EXTRA_CFLAGS);
+my $CFG_LDFLAGS    = join ' ', map { get_vars($_) }
+  qw(LDFLAGS NOTEST_LDFLAGS SH_LDFLAGS);
+my $includedir     = get_vars("includedir");
+my $CFG_INCLUDEDIR = eval qq("$includedir");
+my $CFG_CC         = get_vars("CC");
+my $libexecdir     = get_vars("libexecdir");
+my $CFG_LIBEXECDIR = eval qq("$libexecdir");
+my $sbindir        = get_vars("sbindir");
+my $CFG_SBINDIR    = eval qq("$sbindir");
+my $ltflags        = $ENV{'LTFLAGS'};
+$ltflags or $ltflags = "--silent";
+
+my %internal_vars = map {$_ => 1}
+    qw(TARGET CC CFLAGS CFLAGS_SHLIB LD_SHLIB LDFLAGS_SHLIB LIBS_SHLIB
+       PREFIX SBINDIR INCLUDEDIR LIBEXECDIR SYSCONFDIR);
+
+##
+##  parse argument line
+##
+
+#   defaults for parameters
+my $opt_n = '';
+my $opt_g = '';
+my $opt_c = 0;
+my $opt_o = '';
+my @opt_D = ();
+my @opt_I = ();
+my @opt_L = ();
+my @opt_l = ();
+my @opt_W = ();
+my @opt_S = ();
+my $opt_e = 0;
+my $opt_i = 0;
+my $opt_a = 0;
+my $opt_A = 0;
+my $opt_q = 0;
+my $opt_h = 0;
+my $opt_p = 0;
+my $opt_v = 0;
+
+#   this subroutine is derived from Perl's getopts.pl with the enhancement of
+#   the "+" metacharacter at the format string to allow a list to be built by
+#   subsequent occurrences of the same option.
+sub Getopts {
+    my ($argumentative, @ARGV) = @_;
