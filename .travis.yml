@@ -4,13 +4,15 @@ before_install:
  - sudo apt-get install -qq automake autoconf libtool make zlib1g-dev python
 script:
  - git clone --depth=50 https://github.com/glensc/file.git
- - cd file && libtoolize --copy --force --install
- - cd file && aclocal
- - cd file && autoheader
- - cd file && autoconf
- - cd file && automake -a -c -f --foreign
- - cd file && ./configure --disable-silent-rules
- - cd file && make -j4
+ - cd file
+ - libtoolize --copy --force --install
+ - aclocal
+ - autoheader
+ - autoconf
+ - automake -a -c -f --foreign
+ - ./configure --disable-silent-rules
+ - make -j4
+ - cd ..
  - PATH=file/src:$PATH which file
  - PATH=file/src:$PATH file --version
  - PATH=file/src:$PATH python update-db.py file file/magic/Magdir
