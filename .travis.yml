@@ -12,8 +12,8 @@ script:
  - autoconf
  - automake -a -c -f --foreign
  - ./configure
- - make -C file -j4
- - sudo make install -C file
+ - make -j4
+ - sudo make install
  - cd ..
  - which file
  - file --version
