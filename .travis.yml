@@ -11,7 +11,7 @@ script:
  - autoheader
  - autoconf
  - automake -a -c -f --foreign
- - ./configure
+ - ./configure --prefix=/usr
  - make -j4
  - sudo make install
  - cd ..
