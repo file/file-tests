@@ -11,8 +11,10 @@ script:
  - autoconf
  - automake -a -c -f --foreign
  - ./configure --disable-silent-rules
- - make -j4
+ - make -C file -j4
+ - sudo make install -C file
  - cd ..
- - PATH=file/src:$PATH which file
- - PATH=file/src:$PATH file --version
- - PATH=file/src:$PATH python update-db.py file file/magic/Magdir
+ - which file
+ - file --version
+ - python update-db.py file file/magic/Magdir
+ - python fast-regression-test.py
