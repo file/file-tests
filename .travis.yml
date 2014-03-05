@@ -5,12 +5,13 @@ before_install:
 script:
  - git clone --depth=50 https://github.com/glensc/file.git
  - cd file
+ - git show
  - libtoolize --copy --force --install
  - aclocal
  - autoheader
  - autoconf
  - automake -a -c -f --foreign
- - ./configure --disable-silent-rules
+ - ./configure
  - make -C file -j4
  - sudo make install -C file
  - cd ..
