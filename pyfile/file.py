@@ -35,13 +35,19 @@ def mkdir_p(path):
 		else: raise
 
 def get_file_output(filename, file_binary = "file"):
-	pipe = Popen("file -b " + filename, shell=True, bufsize=4096, stdout=PIPE).stdout
+	popen = Popen("file -b " + filename, shell=True, bufsize=4096, stdout=PIPE)
+	pipe = popen.stdout
 	output = pipe.read()
+	if popen.wait() != 0:
+		return None
 	return output
 
 def get_file_mime(filename, file_binary = "file"):
-	pipe = Popen("file -ib " + filename, shell=True, bufsize=4096, stdout=PIPE).stdout
+	popen = Popen("file -ib " + filename, shell=True, bufsize=4096, stdout=PIPE)
+	pipe = popen.stdout
 	output = pipe.read()
+	if popen.wait() != 0:
+		return None
 	return output
 
 def get_simple_metadata(filename, file_binary = "file"):
@@ -155,8 +161,11 @@ def get_full_metadata(infile, file_name = "file", compiled = True):
 	while True:
 		f = files[i]
 		#print FILE_BINARY + " " + infile + " -m .mgc_temp/" + FILE_BINARY_HASH + "/.find-magic.tmp." + str(i) + COMPILED_SUFFIX
-		pipe = Popen(FILE_BINARY + " -b " + infile + " -m .mgc_temp/" + FILE_BINARY_HASH + "/.find-magic.tmp." + str(i) + COMPILED_SUFFIX, shell=True, bufsize=4096, stdout=PIPE).stdout
+		popen = Popen(FILE_BINARY + " -b " + infile + " -m .mgc_temp/" + FILE_BINARY_HASH + "/.find-magic.tmp." + str(i) + COMPILED_SUFFIX, shell=True, bufsize=4096, stdout=PIPE)
+		pipe = popen.stdout
 		last = pipe.read()
+		if popen.wait() != 0:
+			return {'output':None, 'mime':None, 'pattern':None, "suffix":None}
 		if b_out == None:
 			b_out = last
 		# a---------i---------b
@@ -182,10 +191,13 @@ def get_full_metadata(infile, file_name = "file", compiled = True):
 			buf = fd.read()
 			fd.close()
 			if os.path.exists(os.path.dirname(FILE_BINARY) + "/../magic/magic.mime.mgc"):
-				pipe = Popen(FILE_BINARY + " -bi " + infile + " -m " + os.path.dirname(FILE_BINARY) + "/../magic/magic", shell=True, bufsize=4096, stdout=PIPE).stdout
+				popen = Popen(FILE_BINARY + " -bi " + infile + " -m " + os.path.dirname(FILE_BINARY) + "/../magic/magic", shell=True, bufsize=4096, stdout=PIPE)
 			else:
-				pipe = Popen(FILE_BINARY + " -bi " + infile + " -m .mgc_temp/" + FILE_BINARY_HASH + "/.find-magic.tmp." + str(i) + COMPILED_SUFFIX, shell=True, bufsize=4096, stdout=PIPE).stdout
+				popen = Popen(FILE_BINARY + " -bi " + infile + " -m .mgc_temp/" + FILE_BINARY_HASH + "/.find-magic.tmp." + str(i) + COMPILED_SUFFIX, shell=True, bufsize=4096, stdout=PIPE)
+			pipe = popen.stdout
 			mime = pipe.read()
+			if popen.wait() != 0:
+				return {'output':None, 'mime':None, 'pattern':None, "suffix":None}
 			tlist.append(last)
 			index = infile.find('.')
 			if index == -1:

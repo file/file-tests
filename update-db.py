@@ -22,6 +22,8 @@ from pyfile import *
 from pyfile.progressbar import ProgressBar
 from pyfile.threadpool import *
 
+global_error = False
+
 def update_all_files(file_name = 'file', magdir = 'Magdir'):
 	pool = ThreadPool(4)
 
@@ -34,10 +36,17 @@ def update_all_files(file_name = 'file', magdir = 'Magdir'):
 
 	def store_mimedata(data):
 		metadata = get_full_metadata(data[0], file_name, compiled)
-		set_stored_metadata(data[0], metadata)
-		return data[1]
+		error = metadata['output'] == None
+		if not error:
+			set_stored_metadata(data[0], metadata)
+		return (data[1], error)
 	
-	def data_stored(hide):
+	def data_stored(data):
+		hide, error = data
+		if error:
+			global global_error
+			global_error = True
+			return
 		prog.increment_amount()
 		if not hide:
 			print prog, "Updating database", '\r',
@@ -46,10 +55,14 @@ def update_all_files(file_name = 'file', magdir = 'Magdir'):
 	for i,entry in enumerate(entries):
 		# Insert tasks into the queue and let them run
 		pool.queueTask(store_mimedata, (entry, i % 2), data_stored)
+		if global_error:
+			print "Error when executing File binary"
+			break
 
 	# When all tasks are finished, allow the threads to terminate
 	pool.joinAll()
 	print ''
+	return global_error
 
 file_name = 'file'
 magdir = "Magdir"
@@ -65,7 +78,7 @@ elif (len(sys.argv) == 2 and sys.argv[1] == "-h") or len(sys.argv) == 1:
 	print "Examples:"
 	print "  " + sys.argv[0] + " file-5.07;"
 	print "  " + sys.argv[0] + " file-5.04-my-version file-5.04/magic/Magdir;"
-	sys.exit(0)
+	sys.exit(1)
 
 file_name = sys.argv[1]
-update_all_files(file_name, magdir)
+sys.exit(update_all_files(file_name, magdir))
