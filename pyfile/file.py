@@ -165,6 +165,7 @@ def compile_patterns(file_name = "file"):
 	print ""
 
 def get_full_metadata(infile, file_name = "file", compiled = True):
+	""" file-output plus binary search to find the relevant line in magic file """
 	COMPILED_SUFFIX = ".mgc"
 	if not compiled:
 		COMPILED_SUFFIX = ""
@@ -185,12 +186,13 @@ def get_full_metadata(infile, file_name = "file", compiled = True):
 
 	while True:
 		f = files[i]
+		cmd = FILE_BINARY + " -b " + infile + " -m .mgc_temp/" + FILE_BINARY_HASH + "/.find-magic.tmp." + str(i) + COMPILED_SUFFIX
 		#print FILE_BINARY + " " + infile + " -m .mgc_temp/" + FILE_BINARY_HASH + "/.find-magic.tmp." + str(i) + COMPILED_SUFFIX
-		popen = Popen(FILE_BINARY + " -b " + infile + " -m .mgc_temp/" + FILE_BINARY_HASH + "/.find-magic.tmp." + str(i) + COMPILED_SUFFIX, shell=True, bufsize=4096, stdout=PIPE)
+		popen = Popen(cmd, shell=True, bufsize=4096, stdout=PIPE)
 		pipe = popen.stdout
 		last = pipe.read()
 		if popen.wait() != 0:
-			return {'output':None, 'mime':None, 'pattern':None, "suffix":None}
+			return {'output':None, 'mime':None, 'pattern':None, "suffix":None, "err":(cmd, last.strip())}
 		if b_out == None:
 			b_out = last
 		# a---------i---------b
@@ -216,13 +218,14 @@ def get_full_metadata(infile, file_name = "file", compiled = True):
 			buf = fd.read()
 			fd.close()
 			if os.path.exists(os.path.dirname(FILE_BINARY) + "/../magic/magic.mime.mgc"):
-				popen = Popen(FILE_BINARY + " -bi " + infile + " -m " + os.path.dirname(FILE_BINARY) + "/../magic/magic", shell=True, bufsize=4096, stdout=PIPE)
+				cmd = FILE_BINARY + " -bi " + infile + " -m " + os.path.dirname(FILE_BINARY) + "/../magic/magic"
 			else:
-				popen = Popen(FILE_BINARY + " -bi " + infile + " -m .mgc_temp/" + FILE_BINARY_HASH + "/.find-magic.tmp." + str(i) + COMPILED_SUFFIX, shell=True, bufsize=4096, stdout=PIPE)
+				cmd = FILE_BINARY + " -bi " + infile + " -m .mgc_temp/" + FILE_BINARY_HASH + "/.find-magic.tmp." + str(i) + COMPILED_SUFFIX
+			popen = Popen(cmd, shell=True, bufsize=4096, stdout=PIPE)
 			pipe = popen.stdout
 			mime = pipe.read()
 			if popen.wait() != 0:
-				return {'output':None, 'mime':None, 'pattern':None, "suffix":None}
+				return {'output':None, 'mime':None, 'pattern':None, "suffix":None, "err":(cmd, mime.strip())}
 			tlist.append(last)
 			index = infile.find('.')
 			if index == -1:

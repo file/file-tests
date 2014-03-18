@@ -42,13 +42,18 @@ def update_all_files(file_name = 'file', magdir = 'Magdir'):
 		error = metadata['output'] == None
 		if not error:
 			set_stored_metadata(data[0], metadata)
-		return (data[1], error)
+			return (data[0], data[1], False)
+		else:
+			return (data[0], data[1], metadata['err'])   # err=(cmd, output)
 	
 	def data_stored(data):
-		hide, error = data
+		entry, hide, error = data
 		if error:
 			global global_error
 			global_error = True
+			print 'ERROR for', entry
+			print 'ERROR running command', error[0]
+			print 'ERROR produced output', error[1]
 			return
 		prog.increment_amount()
 		if not hide:

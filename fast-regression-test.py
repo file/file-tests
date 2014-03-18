@@ -30,7 +30,7 @@ def test_all_files(exact = False):
 
 	m = mutex.mutex()
 
-	entries = get_stored_files("db")
+	entries = sorted(get_stored_files("db"))
 
 	def store_mimedata(filename):
 		metadata = get_simple_metadata(filename)
