@@ -74,11 +74,13 @@ def test_attr(attr):
 					undetected.remove(full_path)
 				detected.append(full_path)
 
-for attr in os.listdir("./rpm-fileattrs"):
-	test_attr(os.path.join("./rpm-fileattrs", attr))
+# run this only if started as script from command line
+if __name__ == '__main__':
+	for attr in os.listdir("./rpm-fileattrs"):
+		test_attr(os.path.join("./rpm-fileattrs", attr))
 
-print "Undetected:", undetected
+	print "Undetected:", undetected
 
-#metadata = get_simple_metadata(sys.argv[1])
+	#metadata = get_simple_metadata(sys.argv[1])
 
-#print metadata
+	#print metadata

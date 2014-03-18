@@ -68,21 +68,23 @@ def update_all_files(file_name = 'file', magdir = 'Magdir'):
 	print ''
 	return global_error
 
-file_name = 'file'
-magdir = "Magdir"
+# run this only if started as script from command line
+if __name__ == '__main__':
+	file_name = 'file'
+	magdir = "Magdir"
 
-if len(sys.argv) == 3:
-	magdir = sys.argv[2]
+	if len(sys.argv) == 3:
+		magdir = sys.argv[2]
+		file_name = sys.argv[1]
+	elif (len(sys.argv) == 2 and sys.argv[1] == "-h") or len(sys.argv) == 1:
+		print "Updates database."
+		print sys.argv[0] + " <version_name> [path_to_magdir_directory]"
+		print "  Default path_to_magdir_directory='Magdir'"
+		print "  Default version_name='file'"
+		print "Examples:"
+		print "  " + sys.argv[0] + " file-5.07;"
+		print "  " + sys.argv[0] + " file-5.04-my-version file-5.04/magic/Magdir;"
+		sys.exit(1)
+
 	file_name = sys.argv[1]
-elif (len(sys.argv) == 2 and sys.argv[1] == "-h") or len(sys.argv) == 1:
-	print "Updates database."
-	print sys.argv[0] + " <version_name> [path_to_magdir_directory]"
-	print "  Default path_to_magdir_directory='Magdir'"
-	print "  Default version_name='file'"
-	print "Examples:"
-	print "  " + sys.argv[0] + " file-5.07;"
-	print "  " + sys.argv[0] + " file-5.04-my-version file-5.04/magic/Magdir;"
-	sys.exit(1)
-
-file_name = sys.argv[1]
-sys.exit(update_all_files(file_name, magdir))
+	sys.exit(update_all_files(file_name, magdir))
