@@ -23,6 +23,7 @@ from subprocess import Popen, PIPE
 import pickle
 from progressbar import ProgressBar
 import hashlib
+import re
 
 COMPILED_SUFFIX = ".mgc"
 
@@ -71,11 +72,10 @@ def get_simple_metadata(filename, file_binary = "file"):
 	metadata['mime'] =  get_file_mime(filename, file_binary)
 	return metadata
 
-def split_patterns(magdir = "Magdir", file_name = "file"):
+def _split_patterns(pattern_id = 0, magdir = "Magdir", file_name = "file", only_name = False):
 	FILE_BINARY_HASH = hashlib.sha224(file_name).hexdigest()
 	outputdir = ".mgc_temp/" + FILE_BINARY_HASH + "/output"
 	mkdir_p(outputdir)
-	pattern_id = 0
 
 	files = os.listdir(magdir)
 	files.sort()
@@ -99,7 +99,11 @@ def split_patterns(magdir = "Magdir", file_name = "file"):
 					fd_out = open(os.path.join(outputdir, str(pattern_id)), "w")
 					fd_out.write(buff)
 					fd_out.close()
+					in_pattern = False
 				buff = ""
+				if only_name:
+					if not re.match("^[0-9]*(\\s)*name", line.strip()):
+						continue
 				in_pattern = True
 				pattern_id += 1
 				buff += "#" + f +"\n"
@@ -109,13 +113,19 @@ def split_patterns(magdir = "Magdir", file_name = "file"):
 			elif line.strip().startswith(">") or line.strip().startswith("!"):
 				if in_pattern:
 					buff += line
-				else:
+				elif only_name == False:
 					print "broken pattern in file '" + f + "':" + str(i)
 		if in_pattern:
 			fd_out = open(os.path.join(outputdir, str(pattern_id)), "w")
 			fd_out.write(buff)
 			fd_out.close()
 		fd.close()
+	return pattern_id
+
+def split_patterns(magdir = "Magdir", file_name = "file"):
+	pattern_id = _split_patterns(0, magdir, file_name, True)
+	_split_patterns(pattern_id, magdir, file_name)
+
 	print ''
 
 def compile_patterns(file_name = "file"):
