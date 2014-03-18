@@ -25,17 +25,24 @@ import mutex
 ret = 0
 
 def test_all_files(exact = False):
-	pool = ThreadPool(4)
+
+	print_file_info()
+
 	m = mutex.mutex()
 
 	entries = get_stored_files("db")
 
 	def store_mimedata(filename):
 		metadata = get_simple_metadata(filename)
-		stored_metadata = get_stored_metadata(filename)
-		text = "PASS " + filename
-		if is_regression(stored_metadata, metadata, exact):
-			text = "FAIL " + filename + "\n" + get_diff(stored_metadata, metadata, exact)
+		try:
+			stored_metadata = get_stored_metadata(filename)
+		except IOError:
+			# file not found or corrupt
+			text = "FAIL " + filename + "\n" + "FAIL   could not find stored metadata!"
+		else:
+			text = "PASS " + filename
+			if is_regression(stored_metadata, metadata, exact):
+				text = "FAIL " + filename + "\n" + get_diff(stored_metadata, metadata, exact)
 		return text
 
 	def data_print(data):
@@ -47,6 +54,8 @@ def test_all_files(exact = False):
 
 	def data_stored(data):
 		m.lock(data_print, data)
+
+	pool = ThreadPool(4)  # create here so program exits if error occurs earlier
 
 	for i,entry in enumerate(entries):
 		# Insert tasks into the queue and let them run

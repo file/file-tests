@@ -26,6 +26,21 @@ import hashlib
 
 COMPILED_SUFFIX = ".mgc"
 
+def print_file_info(file_binary='file'):
+	popen = Popen('which ' + file_binary, shell=True, bufsize=4096, stdout=PIPE)
+	pipe = popen.stdout
+	output_which = pipe.read().strip()
+	if popen.wait() != 0:
+		raise ValueError('could not query {0} for its version ({1})!'.format(file_binary, output_which))
+	popen = Popen(file_binary + " --version", shell=True, bufsize=4096, stdout=PIPE)
+	pipe = popen.stdout
+	output_ver = pipe.read().strip()
+	if popen.wait() not in (0,1):
+		raise ValueError('could not query {0} for its version ({1})!'.format(file_binary, output_ver))
+	print 'using file from', output_which
+	print 'version is', output_ver
+
+
 def mkdir_p(path):
 	try:
 		os.makedirs(path)
@@ -64,6 +79,8 @@ def split_patterns(magdir = "Magdir", file_name = "file"):
 
 	files = os.listdir(magdir)
 	files.sort()
+	if len(files) == 0:
+		raise ValueError('no files found in Magdir {0}'.format( os.path.join(os.getcwd(), magdir) ))
 	prog = ProgressBar(0, len(files), 50, mode='fixed', char='#')
 	for f in files:
 		fd = open(os.path.join(magdir, f), "r")
@@ -105,6 +122,8 @@ def compile_patterns(file_name = "file"):
 	FILE_BINARY_HASH = hashlib.sha224(file_name).hexdigest()
 	magdir = ".mgc_temp/" + FILE_BINARY_HASH + "/output"
 	files = os.listdir(magdir)
+	if len(files) == 0:
+		raise ValueError('no files found in Magdir {0}'.format( os.path.join(os.getcwd(), magdir) ))
 	files.sort(key=lambda x: [int(x)])
 	mkdir_p(".mgc_temp")
 	mkdir_p(".mgc_temp/" + FILE_BINARY_HASH)
@@ -112,7 +131,8 @@ def compile_patterns(file_name = "file"):
 	prog = ProgressBar(0, len(files), 50, mode='fixed', char='#')
 
 	for i,f in enumerate(files):
-		if not os.path.exists(".mgc_temp/" + FILE_BINARY_HASH + "/.find-magic.tmp." + str(i) + ".mgc"):
+		out_file = ".mgc_temp/" + FILE_BINARY_HASH + "/.find-magic.tmp." + str(i) + ".mgc"
+		if not os.path.exists(out_file):
 			fd = open(os.path.join(magdir, f), "r")
 			buf = fd.read()
 			fd.close()
@@ -130,9 +150,14 @@ def compile_patterns(file_name = "file"):
 			#mv .find-magic.tmp." + str(i) + ".mgc .mgc_temp/;
 			
 			##os.system("cp .mgc_temp/" + FILE_BINARY_HASH + "/.find-magic.tmp .mgc_temp/" + FILE_BINARY_HASH + "/.find-magic.tmp." + str(i) + ";file -C -m .mgc_temp/" + FILE_BINARY_HASH + "/.find-magic.tmp." + str(i) + ";")
-			os.system("file -C -m .mgc_temp/" + FILE_BINARY_HASH + "/tmp")
+			cmd = "file -C -m .mgc_temp/" + FILE_BINARY_HASH + "/tmp"
+			ret_code = os.system(cmd)
+			if ret_code != 0:
+				raise ValueError('command {0} returned non-zero exit code {1}!'.format(cmd, ret_code))
 			if os.path.exists("tmp.mgc"):
-				os.system("mv tmp.mgc .mgc_temp/" + FILE_BINARY_HASH + "/.find-magic.tmp." + str(i) + ".mgc")
+				ret_code = os.system("mv tmp.mgc " + out_file)
+				if ret_code != 0:
+					raise ValueError('moving tmp.mgc to {0} failed with code {1}!'.format(out_file, ret_code))
 			#os.chdir("..")
 		prog.increment_amount()
 		print prog, "Compiling patterns", '\r',

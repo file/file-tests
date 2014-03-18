@@ -25,13 +25,16 @@ from pyfile.threadpool import *
 global_error = False
 
 def update_all_files(file_name = 'file', magdir = 'Magdir'):
-	pool = ThreadPool(4)
+
+	print_file_info()
 
 	split_patterns(magdir, file_name)
 	compile_patterns(file_name)
 	compiled = is_compilation_supported(file_name)
 
 	entries = get_stored_files("db")
+	if len(entries) == 0:
+		raise ValueError('no files in db {0}'.format( os.path.join(os.getcwd(), 'db') ))
 	prog = ProgressBar(0, len(entries), 50, mode='fixed', char='#')
 
 	def store_mimedata(data):
@@ -52,6 +55,7 @@ def update_all_files(file_name = 'file', magdir = 'Magdir'):
 			print prog, "Updating database", '\r',
 			sys.stdout.flush()
 
+	pool = ThreadPool(4)   # create this here, so program exits if error occurs earlier
 	for i,entry in enumerate(entries):
 		# Insert tasks into the queue and let them run
 		pool.queueTask(store_mimedata, (entry, i % 2), data_stored)
