@@ -1,0 +1,2 @@
+URL: https://raw.github.com/horde/horde/master/kronolith/js/smartmobile.js
+License: GPL
