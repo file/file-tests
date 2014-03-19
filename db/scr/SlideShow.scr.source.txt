@@ -1,0 +1,2 @@
+URL: https://www.fourmilab.ch/slidescr/
+License: public domain
