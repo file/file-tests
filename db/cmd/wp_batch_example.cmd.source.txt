@@ -1,0 +1,3 @@
+AUTHOR: wikipedia
+URL: http://en.wikipedia.org/wiki/Batch_file
+LICENSE: Creative Commons Attribution-ShareAlike
