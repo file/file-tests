@@ -1,0 +1,2 @@
+taken from https://github.com/cout/vbdos/blob/master/games/piles/PILES.BAS
+released into public domain by author "cout"
