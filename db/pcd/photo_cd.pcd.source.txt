@@ -1,0 +1,11 @@
+kodak photo cd image taken from 
+http://pubs.usgs.gov/dds/dds-80/images/PCD
+Readme (http://pubs.usgs.gov/dds/dds-80//1_README.TXT) states:
+:All images included in this 
+  collection are owned by the U.S. Geological Survey, 
+  Hawaiian Volcano Observatory, and are in the public domain.  
+  Therefore, no permission or fee is required for their use.  
+  Please include photo credit for the photographer and the 
+  U.S. Geological Survey.  We assume no responsibility for 
+  the modification of these images."
+Original file name: RIFT_001PCD
