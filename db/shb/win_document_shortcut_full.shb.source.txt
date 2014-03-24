@@ -1,0 +1,6 @@
+AUTHOR: Christian Herdtweck, intra2net
+URL: self-created
+LICENSE: public domain
+
+included full-sized original file (win_document_shortcut_full.shb) because
+"file" reports partial (4k) file as corrupt
