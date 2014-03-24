@@ -1,0 +1,6 @@
+AUTHOR: Christian Herdtweck, intra2net
+URL: self-created
+LICENSE: public domain
+
+added also full version of .shs-file (win_scrap_file_full.shs) because 
+"file" reports corruption in shortened version (win_scrip_file.shs)
