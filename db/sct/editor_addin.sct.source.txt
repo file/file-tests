@@ -1,0 +1,30 @@
+AUTHOR: see Contributors.txt in Release Downloads, start of file below
+URL: winmerge.org
+LICENSE: GPL
+
+
+People who have contributed to WinMerge
+---------------------------------------
+
+Original developer, project admin:
+* Dean Grimm <grimmdp@yahoo.com>
+
+Project lead:
+* Christian List <list1974@hotmail.com>
+
+Developers:
+* Denis Bradford <denisbradford@users.sourceforge.net>
+* Tim Gerundt <tim@gerundt.de>
+* Marcel Gosselin <marcelgosselin@users.sourceforge.net>
+* Gal Hammer <galh@users.sourceforge.net>
+* Takashi Sawanaka <sdottaka@users.sourceforge.net>
+* Alexander Skinner (Graphic Design) <neonapple@users.sourceforge.net>
+* Jochen Tucht <jtuc@users.sourceforge.net>
+* Kimmo Varis <kimmov@winmerge.org>
+
+Inactive/past developers:
+* Laurent Ganier
+* Dennis Limm
+* Chris Mumford
+* Perry Rapp
+* Christian "Seier" Blackburn (Installer)
