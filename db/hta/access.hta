@@ -1,0 +1,132 @@
+<HTML>
+<HEAD>
+<TITLE>Access 2000 Viewer</TITLE>
+<HTA:APPLICATION ID=oHTA>
+<SCRIPT LANGUAGE="VBScript">
+Option Explicit
+
+Dim gstrDatabase
+
+
+Sub ShowTables()
+Dim strTable
+Dim dbeng
+Dim intCounter
+Dim db
+Dim strHtml
+    On Error Resume Next
+    Set dbeng = CreateObject("DAO.DBEngine.36")
+    Set db = dbeng.OpenDatabase(gstrDatabase, False, True)
+    strHtml = "<b>Tables</b> (non-system):<br>"
+    For intCounter = 0 To db.TableDefs.Count - 1
+        If Left(db.TableDefs(intCounter).Name, 4) <> "MSys" Then
+            strHtml = strHtml & "<a language=vbscript href=# onClick='DisplayTable """ & db.TableDefs(intCounter).Name & """'>" & db.TableDefs(intCounter).Name & "</a><br>"
+        End If
+    Next
+    txtTables.InnerHtml = strHtml
+    strHtml = ""
+    strHtml = strHtml & "<b>Queries</b> (no parameters):<br>"
+    For intCounter = 0 To db.QueryDefs.Count - 1
+        If db.QueryDefs(intCounter).Parameters.Count = 0 Then
+            strHtml = strHtml & "<a language=vbscript href=# onClick='DisplayTable """ & db.QueryDefs(intCounter).Name & """'>" & db.QueryDefs(intCounter).Name & "</a><br>"
+        End If
+    Next
+    txtQueries.InnerHtml = strHtml
+    db.Close
+End Sub
+
+Function DisplayTable(strTableName)
+    txtData.InnerHtml = ""
+    txtData.InnerHtml = ShowTable(strTableName)
+End Function
+
+Function ShowTable(strTable) 'As String
+Dim rs 'As Recordset
+Dim intField 'As Integer
+Dim strData 'As String
+Dim dbeng
+Dim db
+Const dbReadOnly = 4 'DAO.RecordsetOptionEnum
+Const dbOpenSnapshot = 4 'DAO.RecordsetTypeEnum
+    On Error Resume Next
+    Set dbeng = CreateObject("DAO.DBEngine.36")
+    Set db = dbeng.OpenDatabase(gstrDatabase, False, True)
+    Set rs = db.OpenRecordset(strTable, dbOpenSnapshot, , dbReadOnly)
+    If Not(rs.EOF And rs.BOF) Then
+        rs.MoveLast
+        rs.MoveFirst
+        'First send out the column headers
+        strTable = "<table border=1>" & vbCrLf & "<tr>" 
+        For intField = 0 to rs.Fields.Count - 1
+            strTable = strTable & "<th bgcolor=#CCCCCC><b>" & rs.Fields(intField).Name & "</b></th>"
+        Next
+        strTable = strTable & "</tr>" & vbCrLf
+        'Now send out the table body
+        Do until rs.EOF
+            strTable = strTable & "<tr>"
+            For intField = 0 to rs.Fields.Count - 1
+                Err.Clear 
+                strTable = strTable & "<td>" & rs.Fields(intField).Value & "</td>"
+                If Err Then strTable = strTable & "<td>&nbsp;</td>" 
+            Next
+            strTable = strTable & "</tr>" & vbCrLf
+            rs.MoveNext
+        Loop
+        strTable = strTable & "</table>"
+        ShowTable = strTable
+    Else
+        ShowTable = ""
+    End If
+End Function
+
+Function BrowseForFile()
+Dim fs 'As Scripting.FileSystemObject
+Dim ts 'As Scripting.TextStream
+Const ForWriting = 2
+    Set fs = CreateObject("Scripting.FileSystemObject")
+    Set ts = fs.OpenTextFile("C:\~temp.htm", ForWriting, True)
+    ts.WriteLine "<html><head><title>Select MDB File</title></head><body><form>&nbsp;Select MDB File:"
+    ts.WriteLine "<br>&nbsp;<input type=file name=filename>"
+    ts.WriteLine "<br>&nbsp;<input type=button language='vbscript' value='OK'"
+    ts.WriteLine "onclick='Window.returnValue=document.Forms(0).elements(0).value : Window.Close'>"
+    ts.WriteLine "</form></body></html>"
+    ts.Close
+    BrowseForFile = window.showModalDialog("C:\~temp.htm", "", "dialogWidth:300px;dialogHeight:120px")
+    fs.DeleteFile "C:\~temp.htm", True
+End Function
+
+</SCRIPT>
+</HEAD>
+
+<BODY>
+<A href=# language=vbscript onClick=window.location.reload>New Database</a><hr>
+<TABLE border=0 cols=2 width=100%>
+<tr>
+<td valign=top><div id="txtTables"></div></td>
+<td valign=top><div id="txtQueries"></div></td>
+</tr>
+</table>
+<hr>
+
+<div id="txtData"></div>
+
+
+<SCRIPT language=vbscript>
+Dim strTable
+Dim dbeng
+Dim intCounter
+Dim db
+    'First test to see if DAO is current
+    On Error Resume Next
+    Set dbeng = CreateObject("DAO.DBEngine.36")
+    If dbeng Is Nothing Then
+        Window.Alert "You must install DAO version 3.6 (Jet version 4)!"
+        Window.Open "http://www.microsoft.com/data"
+    Else
+        gstrDatabase = BrowseForFile()
+        ShowTables
+    End If
+</script>
+
+</BODY>
+</HTML>
