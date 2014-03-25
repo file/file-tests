@@ -1,0 +1,8 @@
+AUTHOR: Christian Herdtweck, Intra2net
+URL: None (self-created)
+LICENSE: public domain
+
+Encoded version (using MS Script Encoder) of DateName.vbs from:
+AUTHOR: Eric Phelps
+URL: http://www.ericphelps.com/scripting/samples/DateName/index.html
+LICENSE: "It's all free (and worth every penny!)" (from top of http://www.ericphelps.com/ )
