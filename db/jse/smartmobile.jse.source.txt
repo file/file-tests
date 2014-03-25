@@ -1,0 +1,7 @@
+AUTHOR: Christian Herdtweck, Intra2net
+URL: none (self-created)
+LICNENSE: GPL
+
+created using MS Script Encode from smartmobile.js from:
+URL: https://raw.github.com/horde/horde/master/kronolith/js/smartmobile.js
+LICENSE: GPL
