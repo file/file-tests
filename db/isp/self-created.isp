@@ -1,0 +1,12 @@
+[ISP INFO]
+PhoneBookFile = MY.ICW
+URLReferral = http://referral.winzigweich.com/refer/refer.dll?
+Sign_Up_EXE = mySignUp.exe
+DUNFile = myDun.dun
+
+[Connection]
+StayConnected = 123:45:67
+
+[URL]
+Signup=about:blank
+Reconnect=about:blank
