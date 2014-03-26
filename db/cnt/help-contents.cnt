@@ -1,0 +1,8 @@
+:Base help-contents.hlp>proc4
+:Title Hilfe zu Hilfeninhaltsangaben
+:Index Hilfe zu Hilfeninhaltsangaben=help-contents.hlp
+1 Inhaltsangabe von Hilfedateien
+2 Unterpunkt1=HELP_CONTENTS_1
+2 Unterpunkt2=HELP_CONTENTS_2
+2 Unterpunkt3=HELP_CONTENTS_3
+2 Unterpunkt4=HELP_CONTENTS_4
