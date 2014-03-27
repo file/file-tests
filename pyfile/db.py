@@ -129,7 +129,7 @@ def get_stored_files(dir_name, subdir = True, *args):
 		dirfile = os.path.join(dir_name, file)
 		if os.path.isfile(dirfile):
 			if not args:
-				if not dirfile.endswith("pickle"):
+				if not dirfile.endswith("pickle") and not dirfile.endswith(".source.txt"):
 					fileList.append(dirfile)
 			else:
 				if os.path.splitext(dirfile)[1][1:] in args:

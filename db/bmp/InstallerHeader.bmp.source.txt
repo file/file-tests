@@ -1,0 +1,3 @@
+AUTHOR: Jan Kaluza <jkaluza@redhat.com>
+URL: https://github.com/miracle2k/fretsonfire/blob/master/data/win32/installer/InstallerHeader.bmp
+LICENSE: GPL

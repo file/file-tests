@@ -1,0 +1,3 @@
+AUTHOR: Jan Kaluza <jkaluza@redhat.com>
+URL: http://fossies.org/dox/Coin-3.1.3/SbClip_8cpp_source.html
+LICENSE: GPLv2
