@@ -30,7 +30,7 @@ def test_all_files(exact = False):
 
 	m = mutex.mutex()
 
-	entries = get_stored_files("db")
+	entries = sorted(get_stored_files("db"))
 
 	def store_mimedata(filename):
 		metadata = get_simple_metadata(filename)
@@ -66,8 +66,10 @@ def test_all_files(exact = False):
 	print ''
 	return ret
 
-exact = False
-if len(sys.argv) == 2 and sys.argv[1] == "exact":
-	exact = True
+# run this only if started as script from command line
+if __name__ == '__main__':
+	exact = False
+	if len(sys.argv) == 2 and sys.argv[1] == "exact":
+		exact = True
 
-sys.exit(test_all_files(exact))
+	sys.exit(test_all_files(exact))

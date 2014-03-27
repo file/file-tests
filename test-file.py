@@ -25,14 +25,12 @@ import mimetypes
 import difflib
 from pyfile import *
 
-mimetypes.init()
+# run this only if started as script from command line
+if __name__ == '__main__':
+	mimetypes.init()
 
-metadata = get_simple_metadata(sys.argv[1])
-stored_metadata = get_stored_metadata(sys.argv[1])
+	metadata = get_simple_metadata(sys.argv[1])
+	stored_metadata = get_stored_metadata(sys.argv[1])
 
-if is_regression(stored_metadata, metadata):
-	sys.exit(1)
-
-
-
-
+	if is_regression(stored_metadata, metadata):
+		sys.exit(1)
