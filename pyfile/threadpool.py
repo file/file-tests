@@ -166,9 +166,7 @@ class ThreadPoolThread(threading.Thread):
         
         self.__isDying = True
 
-# Usage example
-if __name__ == "__main__":
-
+def usage_example():
     from random import randrange
 
     # Sample task 1: given a start and end value, shuffle integers,
@@ -212,3 +210,9 @@ if __name__ == "__main__":
 
     # When all tasks are finished, allow the threads to terminate
     pool.joinAll()
+#end: function usage_example
+
+
+# Usage example
+if __name__ == "__main__":
+    usage_example()

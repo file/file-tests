@@ -26,6 +26,9 @@ ret = 0
 
 def test_all_files(exact = False):
 
+	global ret
+	ret = 0
+
 	print_file_info()
 
 	m = mutex.mutex()
@@ -57,7 +60,7 @@ def test_all_files(exact = False):
 
 	pool = ThreadPool(4)  # create here so program exits if error occurs earlier
 
-	for i,entry in enumerate(entries):
+	for entry in entries:
 		# Insert tasks into the queue and let them run
 		pool.queueTask(store_mimedata, entry, data_stored)
 

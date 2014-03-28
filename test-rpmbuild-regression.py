@@ -32,6 +32,8 @@ detected = []
 undetected = []
 
 def test_attr(attr):
+	global detected
+	global undetected
 	regex = None
 	path = None
 	f = open(attr)

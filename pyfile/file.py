@@ -20,12 +20,9 @@ import os
 import sys
 import errno
 from subprocess import Popen, PIPE
-import pickle
 from progressbar import ProgressBar
 import hashlib
 import re
-
-COMPILED_SUFFIX = ".mgc"
 
 def print_file_info(file_binary='file'):
 	popen = Popen('which ' + file_binary, shell=True, bufsize=4096, stdout=PIPE)
@@ -50,7 +47,7 @@ def mkdir_p(path):
 			pass
 		else: raise
 
-def get_file_output(filename, file_binary = "file"):
+def get_file_output(filename):
 	popen = Popen("file -b " + filename, shell=True, bufsize=4096, stdout=PIPE)
 	pipe = popen.stdout
 	output = pipe.read()
@@ -58,7 +55,7 @@ def get_file_output(filename, file_binary = "file"):
 		return None
 	return output
 
-def get_file_mime(filename, file_binary = "file"):
+def get_file_mime(filename):
 	popen = Popen("file -ib " + filename, shell=True, bufsize=4096, stdout=PIPE)
 	pipe = popen.stdout
 	output = pipe.read()
@@ -66,10 +63,10 @@ def get_file_mime(filename, file_binary = "file"):
 		return None
 	return output
 
-def get_simple_metadata(filename, file_binary = "file"):
+def get_simple_metadata(filename):
 	metadata = {}
-	metadata['output'] = get_file_output(filename, file_binary)
-	metadata['mime'] =  get_file_mime(filename, file_binary)
+	metadata['output'] = get_file_output(filename)
+	metadata['mime'] =  get_file_mime(filename)
 	return metadata
 
 def _split_patterns(pattern_id = 0, magdir = "Magdir", file_name = "file", only_name = False):
@@ -184,7 +181,6 @@ def get_full_metadata(infile, file_name = "file", compiled = True):
 	FILE_BINARY = "file";
 	files = os.listdir(magdir)
 	files.sort(key=lambda x: [int(x)])
-	history = []
 	tlist = []
 	mkdir_p(".mgc_temp")
 	a = 0

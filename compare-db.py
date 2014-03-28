@@ -32,7 +32,6 @@ def compare_all_files(file_name = 'file', magdir = 'Magdir', exact = False):
 	compiled = is_compilation_supported(file_name)
 
 	entries = get_stored_files("db")
-	prog = ProgressBar(0, len(entries), 50, mode='fixed', char='#')
 
 	def store_mimedata(data):
 		metadata = get_full_metadata(data[0], file_name, compiled)
@@ -44,9 +43,6 @@ def compare_all_files(file_name = 'file', magdir = 'Magdir', exact = False):
 
 	def data_print(data):
 		print data
-		if data[0] == "F":
-			global ret
-			ret = 1
 		m.unlock()
 
 	def data_stored(data):
