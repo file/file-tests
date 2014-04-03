@@ -1,0 +1,3 @@
+AUTHOR: Jan Kaluza <jkaluza@redhat.com>
+URL: Part of ansi2knr project
+LICENSE: GPL

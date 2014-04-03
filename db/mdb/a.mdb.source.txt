@@ -1,0 +1,3 @@
+AUTHOR: Jan Kaluza <jkaluza@redhat.com>
+URL: part of Banshee project
+LICENSE:  MIT/X11

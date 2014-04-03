@@ -1,0 +1,3 @@
+AUTHOR: Jan Kaluza <jkaluza@redhat.com>
+URL: Part of ghostscript project
+LICENSE: AGPLv3+

@@ -1,0 +1,3 @@
+AUTHOR: Jan Kaluza <jkaluza@redhat.com>
+URL: libstdc++-devel
+LICENSE: GPLv3+

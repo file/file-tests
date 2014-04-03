@@ -1,0 +1,3 @@
+AUTHOR: Jan Kaluza <jkaluza@redhat.com>
+URL: http://www.webmfiles.org/demo-files/
+LICENSE: Creative Commons Attribution 3.0

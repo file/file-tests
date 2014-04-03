@@ -1,0 +1,102 @@
+*PPD-Adobe: "4.3"
+*%
+*% This PPD file is for using a PDF printer in its native PDF mode, with
+*% option settings controlled via PJL commands. It uses CUPS with the
+*% OpenPrinting CUPS Filters package.
+*%
+*% This PPD is experimental. It is possible that some of the options
+*% and settings do not make sense or do not cause any change on the output.
+*% It can even happen that with certain settings nothing or an error page
+*% comes out.
+*%
+*% This file is published under the GNU General Public License
+*%
+*% You may save this file as 'Generic-PDF_Printer-PDF.ppd'
+*%
+*%
+*FormatVersion:	"4.3"
+*FileVersion:	"1.1"
+*LanguageVersion: English 
+*LanguageEncoding: ISOLatin1
+*PCFileName:	"PDF.PPD"
+*Manufacturer:	"Generic"
+*Product:       "(Generic PDF Printer)"
+*cupsVersion:	1.0
+*cupsManualCopies: True
+*cupsModelNumber:  2
+*ModelName:     "Generic PDF Printer"
+*ShortNickName: "Generic PDF Printer"
+*NickName:      "Generic PDF Printer"
+*PSVersion:     "(3010.107) 0"
+*LanguageLevel:	"3"
+*ColorDevice:	True
+*DefaultColorSpace: CMYK
+*FileSystem:	False
+*Throughput:	"30"
+*LandscapeOrientation: Plus90
+*TTRasterizer:	Type42
+*1284DeviceID: "MFG:Generic;CMD:PJL,PDF;MDL:PDF Printer;CLS:PRINTER;DES:Generic PDF Printer;DRV:DPDF,R1,M0;"
+*JCLBegin:            "<1B>%-12345X@PJL JOB<0A>"
+*JCLToPDFInterpreter: "@PJL ENTER LANGUAGE = PDF<0A>"
+*JCLEnd:              "<1B>%-12345X@PJL EOJ <0A><1B>%-12345X"
+*cupsFilter: "application/vnd.cups-pdf 0 -"
+
+*OpenGroup: General/General
+*JCLOpenUI *PageSize/Page Size: PickOne
+*OrderDependency: 100 JCLSetup *PageSize
+*DefaultPageSize: Letter
+*PageSize Letter/Letter: "@PJL SET PAPER=LETTER<0A>"
+*PageSize A4/A4: "@PJL SET PAPER=A4<0A>"
+*PageSize A5/A5: "@PJL SET PAPER=A5<0A>"
+*PageSize A6/A6: "@PJL SET PAPER=A6<0A>"
+*PageSize ISOB5/ISO B5: "@PJL SET PAPER=B5<0A>"
+*PageSize EnvC5/C5: "@PJL SET PAPER=C5<0A>"
+*PageSize Env10/Com 10: "@PJL SET PAPER=COM10<0A>"
+*PageSize EnvDL/DL: "@PJL SET PAPER=DL<0A>"
+*PageSize 5x13/Eight Point 5x13: "@PJL SET PAPER=EIGHTPOINT5X13<0A>"
+*PageSize EnvC6/Envelope C6: "@PJL SET PAPER=ENVELOPEC6<0A>"
+*PageSize Executive/Executive: "@PJL SET PAPER=EXECUTIVE<0A>"
+*PageSize B5/JIS B5: "@PJL SET PAPER=JISB5<0A>"
+*PageSize B6/JIS B6: "@PJL SET PAPER=JISB6<0A>"
+*PageSize Legal/Legal: "@PJL SET PAPER=LEGAL<0A>"
+*PageSize EnvMonarch/Monarch: "@PJL SET PAPER=MONARCH<0A>"
+*PageSize 69x95mm/16K: "@PJL SET PAPER=SIZE16K195x270<0A>"
+*PageSize Statement/Statement: "@PJL SET PAPER=STATEMENT<0A>"
+*JCLCloseUI: *PageSize
+
+*JCLOpenUI *PageRegion: PickOne
+*OrderDependency: 100 JCLSetup *PageRegion
+*DefaultPageRegion: Letter
+*PageRegion Letter/Letter: "@PJL SET PAPER=LETTER<0A>"
+*PageRegion A4/A4: "@PJL SET PAPER=A4<0A>"
+*PageRegion A5/A5: "@PJL SET PAPER=A5<0A>"
+*PageRegion A6/A6: "@PJL SET PAPER=A6<0A>"
+*PageRegion ISOB5/ISO B5: "@PJL SET PAPER=B5<0A>"
+*PageRegion EnvC5/C5: "@PJL SET PAPER=C5<0A>"
+*PageRegion Env10/Com 10: "@PJL SET PAPER=COM10<0A>"
+*PageRegion EnvDL/DL: "@PJL SET PAPER=DL<0A>"
+*PageRegion 5x13/Eight Point 5x13: "@PJL SET PAPER=EIGHTPOINT5X13<0A>"
+*PageRegion EnvC6/Envelope C6: "@PJL SET PAPER=ENVELOPEC6<0A>"
+*PageRegion Executive/Executive: "@PJL SET PAPER=EXECUTIVE<0A>"
+*PageRegion B5/JIS B5: "@PJL SET PAPER=JISB5<0A>"
+*PageRegion B6/JIS B6: "@PJL SET PAPER=JISB6<0A>"
+*PageRegion Legal/Legal: "@PJL SET PAPER=LEGAL<0A>"
+*PageRegion EnvMonarch/Monarch: "@PJL SET PAPER=MONARCH<0A>"
+*PageRegion 69x95mm/16K: "@PJL SET PAPER=SIZE16K195x270<0A>"
+*PageRegion Statement/Statement: "@PJL SET PAPER=STATEMENT<0A>"
+*JCLCloseUI: *PageRegion
+
+*DefaultImageableArea: Letter
+*ImageableArea Letter/Letter: "18 36 594 756"
+*ImageableArea A4/A4: "18 36 577 806"
+*ImageableArea A5/A5: "18 36 402 559"
+*ImageableArea A6/A6: "18 36 279 384"
+*ImageableArea ISOB5/ISO B5: "18 36 480 672"
+*ImageableArea EnvC5/C5: "18 36 441 613"
+*ImageableArea Env10/Com 10: "18 36 279 648"
+*ImageableArea EnvDL/DL: "18 36 293 587"
+*ImageableArea 5x13/Eight Point 5x13: "18 36 342 900"
+*ImageableArea EnvC6/Envelope C6: "18 36 305 423"
+*ImageableArea Executive/Executive: "18 36 504 720"
+*ImageableArea B5/JIS B5: "18 36 500 691"
+*ImageableArea B
