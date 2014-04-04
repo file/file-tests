@@ -81,9 +81,11 @@ if __name__ == '__main__':
 		print "Reviews patches for file-tests database."
 		print """There are following rules currently:
  - Every file 'F' in file-tests database has to have matching 'F.source.txt'
-   file with the license information.
+   file with the license information. Note that case sensitivity is important
+   and must be respected.
  - Every file with extension '.X' has to be in directory 'db/X' according to
-   its extension.
+   its extension. Note that case sensitivity is important and must be
+   respected.
 """
 		print "Usage: " + sys.argv[0] + " [[patch1], [patch2], ...]"
 		print "Usage: " + sys.argv[0] + " *.patch"

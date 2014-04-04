@@ -14,9 +14,11 @@ follow following rules:
 
  - Every file 'F' in file-tests database has to have matching 'F.source.txt'
    file with the license information. Only licenses which allows free
-   redistribution of the file are allowed
+   redistribution of the file are allowed. Note that case sensitivity is
+   important and must be respected.
  - Every file with extension '.X' has to be in directory 'db/X' according to
-   its extension.
+   its extension. Note that case sensitivity is important and must be
+   respected.
 
 There is simply script called "review-patch.py" which can help you reviewing
 that your patch follows these rules.
