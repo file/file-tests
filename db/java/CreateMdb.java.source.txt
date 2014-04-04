@@ -1,0 +1,6 @@
+AUTHOR: Christian Herdtweck, Intra2Net
+URL: None (self-created)
+LICENSE: public domain
+
+NOTE: this program created the file in ../mdb using library Jackcess 
+(http://jackcess.sourceforge.net/, under LGPLv2)
