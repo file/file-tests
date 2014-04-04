@@ -1,0 +1,3 @@
+AUTHOR: National Eye Institute
+URL: http://www.nei.nih.gov/tools/policies.asp
+LICENSE: Public Domain (Courtesy: National Eye Institute, National Institutes of Health (NEI/NIH))
