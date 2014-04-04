@@ -1,0 +1,22 @@
+==============================================================================
+================== File-tests - File regressions detection ===================
+==============================================================================
+
+Author: Jan Kaluza <jkaluza@redhat.com>
+
+
+
+1) HOW TO ADD NEW FILE INTO DATABASE?
+=====================================
+
+Simply send patches to jkaluza@redhat.com. Every file in database has to
+follow following rules:
+
+ - Every file 'F' in file-tests database has to have matching 'F.source.txt'
+   file with the license information. Only licenses which allows free
+   redistribution of the file are allowed
+ - Every file with extension '.X' has to be in directory 'db/X' according to
+   its extension.
+
+There is simply script called "review-patch.py" which can help you reviewing
+that your patch follows these rules.
