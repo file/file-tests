@@ -1,0 +1,20 @@
+<script language="vbscript" runat="server">
+
+ sub Application_OnStart
+    Application("status")=1
+ end sub
+
+ sub Session_OnStart
+    Application("status")=2
+ end sub
+
+ sub Application_OnEnd
+    Application("status")=3
+ end sub
+
+ sub Session_OnEnd
+    Application("status")=4
+ end sub
+
+ </script>
+
