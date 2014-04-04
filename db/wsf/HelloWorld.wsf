@@ -1,0 +1,8 @@
+﻿<?xml version="1.0"?>
+<job id="HelloWorld">
+  <script language="JScript" src="HelloWorld.js"/>
+  <script language="VBScript">
+    ' Say Hello.
+    WScript.Echo "Hello, World!"
+  </script>
+</job>
