@@ -1,0 +1,5 @@
+AUTHOR: Gábor DEÁK JAHN, Tramontána
+URL: http://wix.tramontana.co.hu/tutorial
+LICENSE: public domain ("All source code fragments inside are freely usable. You can download or print a copy for your own use, as you see fit, there are no restrictions")
+
+since "file" has trouble interpreting the partial (first 4k) .msp-file, the full msp-file is also included here
