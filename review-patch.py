@@ -73,8 +73,7 @@ def review_patches(patches):
 			print "Patch", patch + ":"
 			print out
 
-	return ret;
-		
+	return ret
 
 if __name__ == '__main__':
 	if len(sys.argv) == 1:
