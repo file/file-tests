@@ -24,19 +24,19 @@ import mutex
 
 ret = 0
 
-def test_all_files(exact = False):
+def test_all_files(exact = False, binary = "file"):
 
 	global ret
 	ret = 0
 
-	print_file_info()
+	print_file_info(binary)
 
 	m = mutex.mutex()
 
 	entries = sorted(get_stored_files("db"))
 
 	def store_mimedata(filename):
-		metadata = get_simple_metadata(filename)
+		metadata = get_simple_metadata(filename, binary)
 		try:
 			stored_metadata = get_stored_metadata(filename)
 		except IOError:
@@ -72,7 +72,14 @@ def test_all_files(exact = False):
 # run this only if started as script from command line
 if __name__ == '__main__':
 	exact = False
+	binary = "file"
 	if len(sys.argv) == 2 and sys.argv[1] == "exact":
 		exact = True
+	elif len(sys.argv) == 2:
+		binary = sys.argv[1]
+	elif len(sys.argv) == 3 and sys.argv[2] == "exact":
+		exact = True
+		binary = sys.argv[1]
+		
 
-	sys.exit(test_all_files(exact))
+	sys.exit(test_all_files(exact, binary))

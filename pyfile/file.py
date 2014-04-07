@@ -25,11 +25,14 @@ import hashlib
 import re
 
 def print_file_info(file_binary='file'):
-	popen = Popen('which ' + file_binary, shell=True, bufsize=4096, stdout=PIPE)
-	pipe = popen.stdout
-	output_which = pipe.read().strip()
-	if popen.wait() != 0:
-		raise ValueError('could not query {0} for its version ({1})!'.format(file_binary, output_which))
+	if not file_binary.startswith("/") and not file_binary.startswith("./"):
+		popen = Popen('which ' + file_binary, shell=True, bufsize=4096, stdout=PIPE)
+		pipe = popen.stdout
+		output_which = pipe.read().strip()
+		if popen.wait() != 0:
+			raise ValueError('could not query {0} for its version ({1})!'.format(file_binary, output_which))
+	else:
+		output_which =  file_binary
 	popen = Popen(file_binary + " --version", shell=True, bufsize=4096, stdout=PIPE)
 	pipe = popen.stdout
 	output_ver = pipe.read().strip()
@@ -47,26 +50,28 @@ def mkdir_p(path):
 			pass
 		else: raise
 
-def get_file_output(filename):
-	popen = Popen("file -b " + filename, shell=True, bufsize=4096, stdout=PIPE)
+def get_file_output(filename, binary = "file"):
+	popen = Popen(binary + " -b " + filename, shell=True, bufsize=4096, stdout=PIPE, stderr=PIPE)
 	pipe = popen.stdout
 	output = pipe.read()
+	output_err = popen.stderr.read()
 	if popen.wait() != 0:
-		return None
+		return "Error while calling file, output: " + str(output)
 	return output
 
-def get_file_mime(filename):
-	popen = Popen("file -ib " + filename, shell=True, bufsize=4096, stdout=PIPE)
+def get_file_mime(filename, binary = "file"):
+	popen = Popen(binary + " -ib " + filename, shell=True, bufsize=4096, stdout=PIPE, stderr=PIPE)
 	pipe = popen.stdout
 	output = pipe.read()
+	output_err = popen.stderr.read()
 	if popen.wait() != 0:
-		return None
+		return "Error while calling file, output: " + str(output)
 	return output
 
-def get_simple_metadata(filename):
+def get_simple_metadata(filename, binary = "file"):
 	metadata = {}
-	metadata['output'] = get_file_output(filename)
-	metadata['mime'] =  get_file_mime(filename)
+	metadata['output'] = get_file_output(filename, binary)
+	metadata['mime'] =  get_file_mime(filename, binary)
 	return metadata
 
 def _split_patterns(pattern_id = 0, magdir = "Magdir", file_name = "file", only_name = False):
