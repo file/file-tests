@@ -1,0 +1,4 @@
+AUTHOR: John Elliott
+LICENSE: GPLv2+
+URL: http://www.seasip.info/Unix/Joyce
+taken from version 2.0.2 for Windows

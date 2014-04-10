@@ -1,0 +1,4 @@
+AUTHOR: Christian Herdtweck, Intra2net
+URL: None (self-created)
+LICENSE: public domain
+(created using the INS File Editor by tmallet, http://tmallet.dyndns.org/insfe/)
