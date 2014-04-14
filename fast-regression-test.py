@@ -41,7 +41,8 @@ def test_all_files(exact = False, binary = "file"):
 			stored_metadata = get_stored_metadata(filename)
 		except IOError:
 			# file not found or corrupt
-			text = "FAIL " + filename + "\n" + "FAIL   could not find stored metadata!"
+			text = "FAIL " + filename + "\n" + "FAIL   could not find stored metadata!\n\
+			This can mean that the File failed to generate any output for this file."
 		else:
 			text = "PASS " + filename
 			if is_regression(stored_metadata, metadata, exact):
