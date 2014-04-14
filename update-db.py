@@ -24,13 +24,13 @@ from pyfile.threadpool import *
 
 global_error = False
 
-def update_all_files(file_name = 'file', magdir = 'Magdir'):
+def update_all_files(file_name = 'file', magdir = 'Magdir', file_binary = "file"):
 
-	print_file_info()
+	print_file_info(file_binary)
 
 	split_patterns(magdir, file_name)
-	compile_patterns(file_name)
-	compiled = is_compilation_supported(file_name)
+	compile_patterns(file_name, file_binary)
+	compiled = is_compilation_supported(file_name, file_binary)
 
 	entries = get_stored_files("db")
 	if len(entries) == 0:
@@ -38,7 +38,7 @@ def update_all_files(file_name = 'file', magdir = 'Magdir'):
 	prog = ProgressBar(0, len(entries), 50, mode='fixed', char='#')
 
 	def store_mimedata(data):
-		metadata = get_full_metadata(data[0], file_name, compiled)
+		metadata = get_full_metadata(data[0], file_name, compiled, file_binary)
 		error = metadata['output'] == None
 		if not error:
 			set_stored_metadata(data[0], metadata)
@@ -76,11 +76,16 @@ def update_all_files(file_name = 'file', magdir = 'Magdir'):
 # run this only if started as script from command line
 if __name__ == '__main__':
 	file_name = 'file'
+	file_binary = "file"
 	magdir = "Magdir"
 
 	if len(sys.argv) == 3:
 		magdir = sys.argv[2]
 		file_name = sys.argv[1]
+	elif len(sys.argv) == 4:
+		magdir = sys.argv[2]
+		file_name = sys.argv[1]
+		file_binary = sys.argv[3]
 	elif (len(sys.argv) == 2 and sys.argv[1] == "-h") or len(sys.argv) == 1:
 		print "Updates database."
 		print sys.argv[0] + " <version_name> [path_to_magdir_directory]"
@@ -92,4 +97,4 @@ if __name__ == '__main__':
 		sys.exit(1)
 
 	file_name = sys.argv[1]
-	sys.exit(update_all_files(file_name, magdir))
+	sys.exit(update_all_files(file_name, magdir, file_binary))

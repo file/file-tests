@@ -130,7 +130,7 @@ def split_patterns(magdir = "Magdir", file_name = "file"):
 
 	print ''
 
-def compile_patterns(file_name = "file"):
+def compile_patterns(file_name = "file", file_binary = "file"):
 	FILE_BINARY_HASH = hashlib.sha224(file_name).hexdigest()
 	magdir = ".mgc_temp/" + FILE_BINARY_HASH + "/output"
 	files = os.listdir(magdir)
@@ -162,7 +162,7 @@ def compile_patterns(file_name = "file"):
 			#mv .find-magic.tmp." + str(i) + ".mgc .mgc_temp/;
 			
 			##os.system("cp .mgc_temp/" + FILE_BINARY_HASH + "/.find-magic.tmp .mgc_temp/" + FILE_BINARY_HASH + "/.find-magic.tmp." + str(i) + ";file -C -m .mgc_temp/" + FILE_BINARY_HASH + "/.find-magic.tmp." + str(i) + ";")
-			cmd = "file -C -m .mgc_temp/" + FILE_BINARY_HASH + "/tmp"
+			cmd = file_binary + " -C -m .mgc_temp/" + FILE_BINARY_HASH + "/tmp"
 			ret_code = os.system(cmd)
 			if ret_code != 0:
 				raise ValueError('command {0} returned non-zero exit code {1}!'.format(cmd, ret_code))
@@ -176,14 +176,14 @@ def compile_patterns(file_name = "file"):
 		sys.stdout.flush()
 	print ""
 
-def get_full_metadata(infile, file_name = "file", compiled = True):
+def get_full_metadata(infile, file_name = "file", compiled = True, file_binary = "file"):
 	""" file-output plus binary search to find the relevant line in magic file """
 	COMPILED_SUFFIX = ".mgc"
 	if not compiled:
 		COMPILED_SUFFIX = ""
 	FILE_BINARY_HASH = hashlib.sha224(file_name).hexdigest()
 	magdir = ".mgc_temp/" + FILE_BINARY_HASH + "/output"
-	FILE_BINARY = "file";
+	FILE_BINARY = file_binary
 	files = os.listdir(magdir)
 	files.sort(key=lambda x: [int(x)])
 	tlist = []
@@ -249,9 +249,9 @@ def get_full_metadata(infile, file_name = "file", compiled = True):
 		else:
 			i = a + (b - a) / 2
 
-def is_compilation_supported(file_binary = "file"):
-	FILE_BINARY_HASH = hashlib.sha224(file_binary).hexdigest()
-	if os.system("file /bin/sh -m .mgc_temp/" + FILE_BINARY_HASH + "/.find-magic.tmp.0.mgc > /dev/null") != 0:
+def is_compilation_supported(file_name = "file", file_binary = "file"):
+	FILE_BINARY_HASH = hashlib.sha224(file_name).hexdigest()
+	if os.system(file_binary + " /bin/sh -m .mgc_temp/" + FILE_BINARY_HASH + "/.find-magic.tmp.0.mgc > /dev/null") != 0:
 		print ''
 		print "This file version doesn't support compiled patterns => they won't be used"
 		return False
