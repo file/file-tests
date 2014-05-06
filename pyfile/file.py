@@ -24,8 +24,8 @@ from progressbar import ProgressBar
 import hashlib
 import re
 
-def print_file_info(file_binary='file'):
-	if not file_binary.startswith("/") and not file_binary.startswith("./"):
+def print_file_info(file_binary = 'file'):
+	if not file_binary.startswith("/") and not file_binary.startswith("./") and not file_binary.startswith("../"):
 		popen = Popen('which ' + file_binary, shell=True, bufsize=4096, stdout=PIPE)
 		pipe = popen.stdout
 		output_which = pipe.read().strip()
@@ -85,7 +85,10 @@ def _split_patterns(pattern_id = 0, magdir = "Magdir", file_name = "file", only_
 		raise ValueError('no files found in Magdir {0}'.format( os.path.join(os.getcwd(), magdir) ))
 	prog = ProgressBar(0, len(files), 50, mode='fixed', char='#')
 	for f in files:
-		fd = open(os.path.join(magdir, f), "r")
+		mfile = os.path.join(magdir, f)
+		if os.path.isdir(mfile):
+		    continue
+		fd = open(mfile, "r")
 		buff = ""
 		in_pattern = False
 		prog.increment_amount()

@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 # Copyright (C) 2012 Red Hat, Inc.
 # Authors: Jan Kaluza <jkaluza@redhat.com>
 #
@@ -18,6 +19,7 @@
 
 import os
 import sys
+import getopt
 from pyfile import *
 from pyfile.threadpool import *
 import mutex
@@ -70,17 +72,29 @@ def test_all_files(exact = False, binary = "file"):
 	print ''
 	return ret
 
+def usage(ecode):
+	print "Runs regressions."
+	print sys.argv[0] + " [-e] [-b <file-binary>]"
+	print "  Default file_binary='file'"
+	print "Examples:"
+	print "  " + sys.argv[0] + " -e -b '../file -m ../../magic/magic.mgc'"
+	print "  " + sys.argv[0] + " -e"
+	sys.exit(ecode)
+
 # run this only if started as script from command line
 if __name__ == '__main__':
 	exact = False
-	binary = "file"
-	if len(sys.argv) == 2 and sys.argv[1] == "exact":
-		exact = True
-	elif len(sys.argv) == 2:
-		binary = sys.argv[1]
-	elif len(sys.argv) == 3 and sys.argv[2] == "exact":
-		exact = True
-		binary = sys.argv[1]
-		
+	file_binary = "file"
+	args = sys.argv[1:]
 
-	sys.exit(test_all_files(exact, binary))
+	optlist, args = getopt.getopt(args, 'b:e')
+
+	for o, a in optlist:
+		if o == '-b':
+			file_binary = a
+		elif o == '-e':
+			exact = True
+		else:
+			usage(1)
+
+	sys.exit(test_all_files(exact, file_binary))
