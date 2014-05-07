@@ -29,6 +29,7 @@ from pyfile import *
 if __name__ == '__main__':
 	mimetypes.init()
 
+	print sys.argv[1]
 	metadata = get_simple_metadata(sys.argv[1])
 	stored_metadata = get_stored_metadata(sys.argv[1])
 

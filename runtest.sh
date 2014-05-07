@@ -15,34 +15,34 @@
 #
 # Author: <Your Name> 
 
-. /usr/bin/rhts-environment.sh
-. /usr/lib/beakerlib/beakerlib.sh
+#. /usr/bin/rhts-environment.sh
+#. /usr/lib/beakerlib/beakerlib.sh
 
 PACKAGE="file"
 SLEEP_TIME="1234567890123456789012345678901234567890123456789012345678"
 
-rlJournalStart
-    rlPhaseStartSetup
-        rlAssertRpm ${PACKAGE}
+#rlJournalStart
+#    rlPhaseStartSetup
+#        rlAssertRpm ${PACKAGE}
 #        rlRun "ulimit -c unlimited"
 #        rlServiceStop abrtd
-    rlPhaseEnd
+#    rlPhaseEnd
 
-    rlPhaseStartTest
+#    rlPhaseStartTest
 # this test tests one file at time
 	for f in `find db/ -type f |grep -v ".pickle$"`; do  
-	    rlRun "python test-file.py $f"
+	    python test-file.py $f
 	done
 # this tests all files in 4 threads and is much more faster
 #	rlRun "python fast-regression-test.py"
-    rlPhaseEnd
+#    rlPhaseEnd
 
-    rlPhaseStartCleanup
+#    rlPhaseStartCleanup
 #        rlRun "rm -f core.*"
 #        rlServiceRestore abrtd
 #        rlRun "ulimit -c 0"
-    rlPhaseEnd
-rlJournalPrintText
-rlJournalEnd
+#    rlPhaseEnd
+#rlJournalPrintText
+#rlJournalEnd
 
 
