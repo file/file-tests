@@ -47,7 +47,8 @@ def review_patches(patches):
 
 		added_files.sort()
 		for f in added_files:
-			ext_id = f.find(".")
+			dir_id = f.rfind("/") + 1
+			ext_id = dir_id + f[dir_id:].find(".")
 			if ext_id != -1:
 				ext = f[ext_id + 1:]
 				if ext.endswith("source.txt"):
