@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 # Copyright (C) 2014 Red Hat, Inc.
 # Authors: Jan Kaluza <jkaluza@redhat.com>
 #
