@@ -22,5 +22,5 @@ script:
 
  - git clone --depth=1 $FILE_TESTS_URL file-tests
  - cd file-tests/file-tests
- - python update-db.py file file/magic/Magdir
+ - python update-db.py file ../../file/magic/Magdir
  - python fast-regression-test.py
