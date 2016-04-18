@@ -12,7 +12,7 @@ script:
  - cd file
  - git log -1
  - autoreconf -f -i
- - ./configure --disable-silent-rules
+ - ./configure --disable-silent-rules --prefix=/usr
  - make -j4
  - make -C tests check
  - sudo make install
