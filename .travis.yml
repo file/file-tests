@@ -1,9 +1,14 @@
 language: python
+
+env:
+ - FILE_URL=git://github.com/file/file.git
+ - FILE_TESTS_URL=git://github.com/hanzz/file-trunk-tests.git
+
 before_install:
  - sudo apt-get update -qq
  - sudo apt-get install -qq automake autoconf libtool make zlib1g-dev python
 script:
- - git clone --depth=50 git://github.com/glensc/file.git
+ - git clone --depth=1 $FILE_URL
  - cd file
  - git log -1
  - libtoolize --copy --force --install
@@ -17,5 +22,8 @@ script:
  - cd ..
  - which file
  - file --version
+
+ - git clone --depth=1 $FILE_TESTS_URL file-tests
+ - cd file-tests
  - python update-db.py file file/magic/Magdir
  - python fast-regression-test.py
