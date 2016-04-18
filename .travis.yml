@@ -5,19 +5,16 @@ env:
 
 before_install:
  - sudo apt-get update -qq
- - sudo apt-get install -qq automake autoconf libtool make zlib1g-dev python
+ - sudo apt-get install -qq automake libtool make python zlib1g-dev
 
 script:
  - git clone --depth=1 $FILE_URL file
  - cd file
  - git log -1
- - libtoolize --copy --force --install
- - aclocal
- - autoheader
- - autoconf
- - automake -a -c -f --foreign
- - ./configure --prefix=/usr
+ - autoreconf -f -i
+ - ./configure --disable-silent-rules
  - make -j4
+ - make -C tests check
  - sudo make install
  - cd ..
  - which file
