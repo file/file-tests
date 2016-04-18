@@ -1,8 +1,7 @@
 language: python
 
 env:
- - FILE_URL=git://github.com/file/file.git
- - FILE_TESTS_URL=git://github.com/hanzz/file-trunk-tests.git
+ - FILE_URL=git://github.com/file/file.git FILE_TESTS_URL=git://github.com/hanzz/file-trunk-tests.git
 
 before_install:
  - sudo apt-get update -qq
