@@ -39,7 +39,7 @@ function get_payload() {
 	}
 
 	$rawPost = file_get_contents('php://input');
-	if ($hash !== hash_hmac($algo, $payload, HOOK_SECRET)) {
+	if ($hash !== hash_hmac($algo, $rawPost, HOOK_SECRET)) {
 		throw new InvalidArgumentException("Hook secret ($algo) does not match");
 	}
 
