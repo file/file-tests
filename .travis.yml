@@ -14,8 +14,8 @@ before_install:
 
 script:
  - git clone --depth=100 $FILE_URL file
- - test -n "$commit" && git checkout $commit
  - cd file
+ - test -n "$commit" && git checkout $commit
  - git log -1
  - autoreconf -f -i
  - ./configure --disable-silent-rules --prefix=/usr
