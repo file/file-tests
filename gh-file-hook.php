@@ -75,7 +75,14 @@ function travis_request($repo, $token, $request) {
 	$options = array(
 		CURLOPT_HTTPHEADER => $headers,
 	);
-	return UrlUtil::JsonRequest($url, $body, UrlUtil::HTTP_METHOD_POST, $options);
+	$res = UrlUtil::JsonRequest($url, $body, UrlUtil::HTTP_METHOD_POST, $options, $info, 1);
+
+	// handle errors, like request_limit_reached
+	if ($res['@type'] == 'error') {
+		throw new RuntimeException($res['error_message']);
+	}
+
+	return $res;
 }
 
 function travis_trigger_build($payload) {
@@ -87,19 +94,38 @@ function travis_trigger_build($payload) {
 	$branch = substr($payload['ref'], 11);
 	$commit_id = substr($commit['id'], 0, 7);
 	$commit_message = $commit['message'];
-	$author = $commit['author']['name'];
 
-	$message = "$author($repo:$commit_id): $commit_message";
+	// use shorter username if available
+	if (isset($commit['author']['username'])) {
+		$author = "@{$commit['author']['username']}";
+	} else {
+		$author = $commit['author']['name'];
+	}
+
+	// remove newlines, they look better then in travis
+	$commit_message = preg_replace("/\s+/", ' ', $commit_message);
+
+	// build message to be displayed in travis. try to be compact
+	$message = "$repo $commit_id ($author)$commit_message";
+
+	// as env gets overwritten, need to specifiy everything
+	$env = array(
+		'global' => array(
+			"FILE_URL=git://github.com/file/file.git",
+			"repository={$payload['repository']['clone_url']}",
+			"commit=$commit_id",
+		),
+		'matrix' => array(
+			"FILE_TESTS_URL=git://github.com/hanzz/file-trunk-tests.git",
+			"FILE_TESTS_URL=http://git.fedorahosted.org/git/file-tests.git",
+		),
+	);
+
 	$request = array(
 		'message' => $message,
 		'branch' => TRAVIS_REPO_BRANCH,
 		'config' => array(
-			'env' => array(
-				'global' => array(
-					"repository={$payload['repository']['clone_url']}",
-					"commit=$commit_id",
-				),
-			),
+			'env' => $env,
 		),
 	);
 
