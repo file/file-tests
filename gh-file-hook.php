@@ -71,13 +71,11 @@ function travis_request($repo, $token, $request) {
 	$url = sprintf("https://api.travis-ci.org/repo/%s/requests", urlencode($repo));
 	$body = json_encode(array('request' => $request));
 
-
 	$params = array();
 	$options = array(
 		CURLOPT_HTTPHEADER => $headers,
-		CURLOPT_POSTFIELDS => $body,
 	);
-	return UrlUtil::JsonRequest($url, $params, UrlUtil::HTTP_METHOD_POST, $options);
+	return UrlUtil::JsonRequest($url, $body, UrlUtil::HTTP_METHOD_POST, $options);
 }
 
 function travis_trigger_build($payload) {
