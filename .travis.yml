@@ -1,12 +1,16 @@
 language: c
 
 env:
- - FILE_URL=git://github.com/file/file.git FILE_TESTS_URL=git://github.com/hanzz/file-trunk-tests.git
- - FILE_URL=git://github.com/file/file.git FILE_TESTS_URL=http://git.fedorahosted.org/git/file-tests.git
+ - global:
+  - FILE_URL=git://github.com/file/file.git
+ - matrix:
+  - FILE_TESTS_URL=git://github.com/hanzz/file-trunk-tests.git
+  - FILE_TESTS_URL=http://git.fedorahosted.org/git/file-tests.git
 
 before_install:
  - sudo apt-get update -qq
  - sudo apt-get install -qq automake libtool make python zlib1g-dev
+ - env
 
 script:
  - git clone --depth=1 $FILE_URL file
@@ -26,3 +30,5 @@ script:
  - git log -1
  - python update-db.py file ../../file/magic/Magdir
  - python fast-regression-test.py
+
+# vim:ts=1:sw=1:et
