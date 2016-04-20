@@ -13,7 +13,8 @@ before_install:
  - env
 
 script:
- - git clone --depth=1 $FILE_URL file
+ - git clone --depth=100 $FILE_URL file
+ - test -n "$commit" && git checkout $commit
  - cd file
  - git log -1
  - autoreconf -f -i
