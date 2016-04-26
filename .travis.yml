@@ -1,5 +1,9 @@
 language: c
 
+os:
+ - linux
+ - osx
+
 env:
  global:
   - FILE_URL=git://github.com/file/file.git
