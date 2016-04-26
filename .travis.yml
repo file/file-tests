@@ -12,9 +12,9 @@ env:
   - FILE_TESTS_URL=http://git.fedorahosted.org/git/file-tests.git
 
 before_install:
- - sudo apt-get update -qq
- - sudo apt-get install -qq automake libtool make python zlib1g-dev
  - env
+ - if [ "$TRAVIS_OS_NAME" = "linux" ]; then sudo apt-get update -qq; fi
+ - if [ "$TRAVIS_OS_NAME" = "linux" ]; then sudo apt-get install -qq automake libtool make python zlib1g-dev; fi
 
 script:
  - git clone --depth=100 $FILE_URL file
