@@ -14,6 +14,8 @@ before_install:
  - if [ "$TRAVIS_OS_NAME" = "linux" ]; then sudo apt-get install -qq automake libtool make python zlib1g-dev; fi
 
 script:
+ # abort on any command failure
+ - set -e
  - git clone --depth=100 $FILE_URL file
  - cd file
  - test -z "$commit" || git checkout $commit
