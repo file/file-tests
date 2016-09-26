@@ -7,9 +7,6 @@ os:
 env:
  global:
   - FILE_URL=git://github.com/file/file.git
- matrix:
-  - FILE_TESTS_URL=http://github.com/hanzz/file-trunk-tests.git
-  - FILE_TESTS_URL=http://git.fedorahosted.org/git/file-tests.git
 
 before_install:
  - env
@@ -30,11 +27,7 @@ script:
  - which file
  - file --version
 
- - git clone --depth=1 $FILE_TESTS_URL file-tests
- - cd file-tests
- - test ! -d file-tests || cd file-tests
- - git log -1
- - python update-db.py file ../../file/magic/Magdir
+ - python update-db.py -m file/magic/Magdir
  - python fast-regression-test.py
 
 # vim:ts=1:sw=1:et
