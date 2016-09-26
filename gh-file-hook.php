@@ -114,7 +114,7 @@ function travis_trigger_build($payload) {
 	$commit_message = preg_replace("/\s+/", ' ', $commit_message);
 
 	// build message to be displayed in travis. try to be compact
-	$message = "$repo $commit_id ($author)$commit_message";
+	$message = "$repo $commit_id ($author) $commit_message";
 
 	// NOTE: env gets overwritten,
 	// so if you have any env in .travis.yml it must be specified here as well
