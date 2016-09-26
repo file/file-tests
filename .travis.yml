@@ -1,0 +1,40 @@
+language: c
+
+os:
+ - linux
+ - osx
+
+env:
+ global:
+  - FILE_URL=git://github.com/file/file.git
+ matrix:
+  - FILE_TESTS_URL=http://github.com/hanzz/file-trunk-tests.git
+  - FILE_TESTS_URL=http://git.fedorahosted.org/git/file-tests.git
+
+before_install:
+ - env
+ - if [ "$TRAVIS_OS_NAME" = "linux" ]; then sudo apt-get update -qq; fi
+ - if [ "$TRAVIS_OS_NAME" = "linux" ]; then sudo apt-get install -qq automake libtool make python zlib1g-dev; fi
+
+script:
+ - git clone --depth=100 $FILE_URL file
+ - cd file
+ - test -z "$commit" || git checkout $commit
+ - git log -1
+ - autoreconf -f -i
+ - ./configure --disable-silent-rules --prefix=/usr
+ - make -j4
+ - make -C tests check
+ - sudo make install
+ - cd ..
+ - which file
+ - file --version
+
+ - git clone --depth=1 $FILE_TESTS_URL file-tests
+ - cd file-tests
+ - test ! -d file-tests || cd file-tests
+ - git log -1
+ - python update-db.py file ../../file/magic/Magdir
+ - python fast-regression-test.py
+
+# vim:ts=1:sw=1:et
