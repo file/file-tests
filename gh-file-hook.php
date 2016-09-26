@@ -1,4 +1,12 @@
 <?php
+// This script is setup as Webook endpoint
+// configured to notify on each push:
+//   https://github.com/file/file/settings/hooks
+//
+// The script will trigger travis build of file-tests repository passing
+// commit=$commit of file repository that triggered the build
+//
+// References:
 // https://developer.github.com/webhooks/
 // https://gist.github.com/glensc/fb5b55f0d0abc962f3bfb0777ab5546a
 
@@ -8,9 +16,9 @@ define('GITHUB_HOOK_SECRET', '');
 define('TRAVIS_CI_TOKEN', '');
 
 // repo to trigger build on
-define('TRAVIS_REPO', 'glensc/file-tests');
+define('TRAVIS_REPO', 'file/file-tests');
 // and the branch name
-define('TRAVIS_REPO_BRANCH', 'new-logic');
+define('TRAVIS_REPO_BRANCH', 'master');
 
 set_exception_handler(function($e) {
 	header('HTTP/1.1 500 Internal Server Error');
