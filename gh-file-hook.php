@@ -116,16 +116,12 @@ function travis_trigger_build($payload) {
 	// build message to be displayed in travis. try to be compact
 	$message = "$repo $commit_id ($author)$commit_message";
 
-	// as env gets overwritten, need to specifiy everything
+	// NOTE: env gets overwritten,
+	// so if you have any env in .travis.yml it must be specified here as well
 	$env = array(
 		'global' => array(
-			"FILE_URL=git://github.com/file/file.git",
 			"repository={$payload['repository']['clone_url']}",
 			"commit=$commit_id",
-		),
-		'matrix' => array(
-			"FILE_TESTS_URL=git://github.com/hanzz/file-trunk-tests.git",
-			"FILE_TESTS_URL=http://git.fedorahosted.org/git/file-tests.git",
 		),
 	);
 

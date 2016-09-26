@@ -4,10 +4,6 @@ os:
  - linux
  - osx
 
-env:
- global:
-  - FILE_URL=git://github.com/file/file.git
-
 before_install:
  - env
  - if [ "$TRAVIS_OS_NAME" = "linux" ]; then sudo apt-get update -qq; fi
@@ -19,7 +15,7 @@ before_install:
 script:
  # abort on any command failure
  - set -e
- - git clone --depth=100 $FILE_URL file
+ - git clone --depth=100 git://github.com/file/file.git
  - cd file
  - test -z "$commit" || git checkout $commit
  - git log -1
