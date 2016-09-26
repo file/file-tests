@@ -15,19 +15,21 @@ before_install:
 script:
  # abort on any command failure
  - set -e
+
+ # build and install file
  - git clone --depth=100 git://github.com/file/file.git
  - cd file
  - test -z "$commit" || git checkout $commit
  - git log -1
  - autoreconf -f -i
- - ./configure --disable-silent-rules --prefix=/usr
+ - ./configure --prefix=/usr
  - make -j4
- - make -C tests check
  - sudo make install
  - cd ..
  - which file
  - file --version
 
+ # run file-tests
  - python update-db.py -m file/magic/Magdir
  - python fast-regression-test.py
 
