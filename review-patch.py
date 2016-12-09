@@ -21,66 +21,66 @@ import os
 import sys
 
 def review_patches(patches):
-	ret = 0
-	for patch in patches:
-		out = ""
-		f = open(patch)
+    ret = 0
+    for patch in patches:
+        out = ""
+        f = open(patch)
 
-		added_files = []
-		files_without_source = []
+        added_files = []
+        files_without_source = []
 
-		for line in f.readlines():
-			filename = ""
-			if line.startswith("+++"):
-				filename = line[4:-1]
-			elif line.startswith("diff --git"):
-				filename = line[line.rfind(" ") + 1:-1]
+        for line in f.readlines():
+            filename = ""
+            if line.startswith("+++"):
+                filename = line[4:-1]
+            elif line.startswith("diff --git"):
+                filename = line[line.rfind(" ") + 1:-1]
 
-			if filename != "" and not filename in added_files:
-				added_files.append(filename)
-				if not filename.endswith(".source.txt"):
-					files_without_source.append(filename)
-		f.close()
+            if filename != "" and not filename in added_files:
+                added_files.append(filename)
+                if not filename.endswith(".source.txt"):
+                    files_without_source.append(filename)
+        f.close()
 
 
-		local_error = False
+        local_error = False
 
-		added_files.sort()
-		for f in added_files:
-			dir_id = f.rfind("/") + 1
-			ext_id = dir_id + f[dir_id:].find(".")
-			if ext_id != -1:
-				ext = f[ext_id + 1:]
-				if ext.endswith("source.txt"):
-					real_db_file = f[:-len(".source.txt")]
-					try:
-						files_without_source.remove(real_db_file)
-					except:
-						out += "\t" + f + ": .source.txt found for non-existing file, expecting " + real_db_file + " in patch\n"
-						ret = 1
-						local_error = True
-				else:
-					db_dir = os.path.basename(os.path.dirname(f))
-					if db_dir != ext:
-						out += "\t" + f + ": File is not in proper directory according to extension\n"
-						ret = 1
-						local_error = True
+        added_files.sort()
+        for f in added_files:
+            dir_id = f.rfind("/") + 1
+            ext_id = dir_id + f[dir_id:].find(".")
+            if ext_id != -1:
+                ext = f[ext_id + 1:]
+                if ext.endswith("source.txt"):
+                    real_db_file = f[:-len(".source.txt")]
+                    try:
+                        files_without_source.remove(real_db_file)
+                    except:
+                        out += "\t" + f + ": .source.txt found for non-existing file, expecting " + real_db_file + " in patch\n"
+                        ret = 1
+                        local_error = True
+                else:
+                    db_dir = os.path.basename(os.path.dirname(f))
+                    if db_dir != ext:
+                        out += "\t" + f + ": File is not in proper directory according to extension\n"
+                        ret = 1
+                        local_error = True
 
-		for f in files_without_source:
-			out += "\t" + f + ": Does not have matching .source.txt file with license\n"
-			ret = 1
-			local_error = True
+        for f in files_without_source:
+            out += "\t" + f + ": Does not have matching .source.txt file with license\n"
+            ret = 1
+            local_error = True
 
-		if local_error:
-			print "Patch", patch + ":"
-			print out
+        if local_error:
+            print "Patch", patch + ":"
+            print out
 
-	return ret
+    return ret
 
 if __name__ == '__main__':
-	if len(sys.argv) == 1:
-		print "Reviews patches for file-tests database."
-		print """There are following rules currently:
+    if len(sys.argv) == 1:
+        print "Reviews patches for file-tests database."
+        print """There are following rules currently:
  - Every file 'F' in file-tests database has to have matching 'F.source.txt'
    file with the license information. Note that case sensitivity is important
    and must be respected.
@@ -88,7 +88,7 @@ if __name__ == '__main__':
    its extension. Note that case sensitivity is important and must be
    respected.
 """
-		print "Usage: " + sys.argv[0] + " [[patch1], [patch2], ...]"
-		print "Usage: " + sys.argv[0] + " *.patch"
-		sys.exit(0)
-	sys.exit(review_patches(sys.argv[1:]))
+        print "Usage: " + sys.argv[0] + " [[patch1], [patch2], ...]"
+        print "Usage: " + sys.argv[0] + " *.patch"
+        sys.exit(0)
+    sys.exit(review_patches(sys.argv[1:]))
