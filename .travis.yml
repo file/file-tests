@@ -24,6 +24,9 @@ script:
  - autoreconf -f -i
  - ./configure --prefix=/usr
  - make -j4
+   # remove system file package first
+   # see https://github.com/file/file-tests/issues/3
+ - if [ "$TRAVIS_OS_NAME" = "linux" ]; then sudo apt-get remove -y libmagic1 file; fi
  - sudo make install
  - cd ..
  - which file
