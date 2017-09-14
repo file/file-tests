@@ -22,7 +22,8 @@ script:
  - test -z "$commit" || git checkout $commit
  - git log -1
  - autoreconf -f -i
- - ./configure --prefix=/usr
+ - case "$TRAVIS_OS_NAME" in osx) prefix=/usr/local;; linux) prefix=/usr;; esac
+ - ./configure --prefix=$prefix
  - make -j4
    # remove system file package first
    # see https://github.com/file/file-tests/issues/3
