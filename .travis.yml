@@ -11,6 +11,8 @@ before_install:
  # workaround for /usr/local/Library/ENV/4.3/sed: No such file or directory
  # http://stackoverflow.com/a/38471887
  - if [ "$TRAVIS_OS_NAME" = "osx" ]; then brew reinstall -s libtool; fi
+ # https://github.com/travis-ci/travis-ci/issues/6307
+ - if [ "$TRAVIS_OS_NAME" = "osx" ]; then rvm get stable; fi
 
 script:
  # abort on any command failure
