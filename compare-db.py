@@ -13,8 +13,8 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with this program; if not, write to the Free Software
-# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
-#
+# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,
+# USA.
 
 import os
 import sys
@@ -24,7 +24,7 @@ from pyfile.threadpool import *
 import mutex
 
 
-def compare_all_files(file_name = 'file', magdir = 'Magdir', exact = False):
+def compare_all_files(file_name='file', magdir='Magdir', exact=False):
     pool = ThreadPool(4)
     m = mutex.mutex()
 
@@ -39,7 +39,8 @@ def compare_all_files(file_name = 'file', magdir = 'Magdir', exact = False):
         stored_metadata = get_stored_metadata(data[0])
         text = "PASS " + data[0]
         if is_regression(stored_metadata, metadata, exact):
-            text = "FAIL " + data[0] + "\n" + get_diff(stored_metadata, metadata, exact)
+            text = "FAIL " + data[0] + "\n" + \
+                   get_diff(stored_metadata, metadata, exact)
         return text
 
     def data_print(data):
@@ -49,7 +50,7 @@ def compare_all_files(file_name = 'file', magdir = 'Magdir', exact = False):
     def data_stored(data):
         m.lock(data_print, data)
 
-    for i,entry in enumerate(entries):
+    for i, entry in enumerate(entries):
         # Insert tasks into the queue and let them run
         pool.queueTask(store_mimedata, (entry, i % 2), data_stored)
 
