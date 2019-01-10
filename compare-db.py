@@ -35,8 +35,10 @@ def compare_all_files(file_name='file', magdir='Magdir', exact=False):
     Creates a ThreadPool to do this in parallel. Uses a mutex lock to ensure
     that text output is not garbled.
     """
-    pool = ThreadPool(4)
-    m = mutex.mutex()
+    n_threads = 4
+
+    pool = ThreadPool(n_threads)
+    print_lock = mutex.mutex()
 
     split_patterns(magdir, file_name)
     compile_patterns(file_name)
@@ -46,26 +48,28 @@ def compare_all_files(file_name='file', magdir='Magdir', exact=False):
 
     def store_mimedata(data):
         """For a single db entry, calls file(1) and compares it to db data."""
-        metadata = get_full_metadata(data[0], file_name, compiled)
-        stored_metadata = get_stored_metadata(data[0])
-        text = "PASS " + data[0]
+        entry, _ = data
+        metadata = get_full_metadata(entry, file_name, compiled)
+        stored_metadata = get_stored_metadata(entry)
+        text = "PASS " + entry
         if is_regression(stored_metadata, metadata, exact):
-            text = "FAIL " + data[0] + "\n" + \
+            text = "FAIL " + entry + "\n" + \
                    get_diff(stored_metadata, metadata, exact)
         return text
 
     def data_print(data):
         """Print result for single entry and unlock print lock."""
         print(data)
-        m.unlock()
+        print_lock.unlock()
 
     def data_stored(data):
         """Call data_print as soon as print lock has been acquired."""
-        m.lock(data_print, data)
+        print_lock.lock(data_print, data)
 
-    for i, entry in enumerate(entries):
+    for index, entry in enumerate(entries):
         # Insert tasks into the queue and let them run
-        pool.queueTask(store_mimedata, (entry, i % 2), data_stored)
+        pool.queueTask(store_mimedata, args=(entry, index % 2),
+                       callback=data_stored)
 
     # When all tasks are finished, allow the threads to terminate
     pool.joinAll()
