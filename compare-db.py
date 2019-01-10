@@ -16,6 +16,8 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,
 # USA.
 
+from __future__ import print_function
+
 import os
 import sys
 from pyfile import *
@@ -44,7 +46,7 @@ def compare_all_files(file_name='file', magdir='Magdir', exact=False):
         return text
 
     def data_print(data):
-        print data
+        print(data)
         m.unlock()
 
     def data_stored(data):
@@ -56,7 +58,7 @@ def compare_all_files(file_name='file', magdir='Magdir', exact=False):
 
     # When all tasks are finished, allow the threads to terminate
     pool.joinAll()
-    print ''
+    print('')
 
 
 # run this only if started as script from command line
@@ -69,13 +71,13 @@ if __name__ == '__main__':
         file_name = sys.argv[1]
         magdir = sys.argv[2]
     elif (len(sys.argv) == 2 and sys.argv[1] == "-h") or len(sys.argv) == 1:
-        print "Compares files in database with output of current file binary."
-        print sys.argv[0] + " [path_to_magdir_directory] [file_name]"
-        print "  Default path_to_magdir_directory='Magdir'"
-        print "  Default file_name='file'"
-        print "Examples:"
-        print "  " + sys.argv[0] + " file-5.07;"
-        print "  " + sys.argv[0] + " file-5.07 file-5.04/magic/Magdir;"
+        print("Compares files in database with output of current file binary.")
+        print(sys.argv[0] + " [path_to_magdir_directory] [file_name]")
+        print("  Default path_to_magdir_directory='Magdir'")
+        print("  Default file_name='file'")
+        print("Examples:")
+        print("  " + sys.argv[0] + " file-5.07;")
+        print("  " + sys.argv[0] + " file-5.07 file-5.04/magic/Magdir;")
         sys.exit(0)
 
     if magdir == "exact":
