@@ -61,8 +61,8 @@ def compare_all_files(file_name='file', magdir='Magdir', exact=False):
     print('')
 
 
-# run this only if started as script from command line
-if __name__ == '__main__':
+def main():
+    """Parse arguments, call :py:func:`compare_all_files`."""
     file_name = 'file'
     magdir = "Magdir"
     exact = False
@@ -89,3 +89,8 @@ if __name__ == '__main__':
 
     file_name = sys.argv[1]
     compare_all_files(file_name, magdir, exact)
+
+
+# run this only if started as script from command line
+if __name__ == '__main__':
+    main()
