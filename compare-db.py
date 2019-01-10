@@ -16,6 +16,8 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,
 # USA.
 
+"""Compare contents of db with output from other version of file(1)."""
+
 from __future__ import print_function
 
 import os
@@ -27,6 +29,12 @@ import mutex
 
 
 def compare_all_files(file_name='file', magdir='Magdir', exact=False):
+    """
+    Compares all saved file(1) output in db with that of other file(1) version.
+
+    Creates a ThreadPool to do this in parallel. Uses a mutex lock to ensure
+    that text output is not garbled.
+    """
     pool = ThreadPool(4)
     m = mutex.mutex()
 
@@ -37,6 +45,7 @@ def compare_all_files(file_name='file', magdir='Magdir', exact=False):
     entries = get_stored_files("db")
 
     def store_mimedata(data):
+        """For a single db entry, calls file(1) and compares it to db data."""
         metadata = get_full_metadata(data[0], file_name, compiled)
         stored_metadata = get_stored_metadata(data[0])
         text = "PASS " + data[0]
@@ -46,10 +55,12 @@ def compare_all_files(file_name='file', magdir='Magdir', exact=False):
         return text
 
     def data_print(data):
+        """Print result for single entry and unlock print lock."""
         print(data)
         m.unlock()
 
     def data_stored(data):
+        """Call data_print as soon as print lock has been acquired."""
         m.lock(data_print, data)
 
     for i, entry in enumerate(entries):
