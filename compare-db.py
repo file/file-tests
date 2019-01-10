@@ -20,10 +20,8 @@
 
 from __future__ import print_function
 
-import os
 import sys
 from pyfile import *
-from pyfile.progressbar import ProgressBar
 from pyfile.threadpool import *
 import mutex
 
@@ -36,7 +34,6 @@ def compare_all_files(file_name='file', magdir='Magdir', exact=False):
     that text output is not garbled.
     """
     n_threads = 4
-
     pool = ThreadPool(n_threads)
     print_lock = mutex.mutex()
 
@@ -46,9 +43,8 @@ def compare_all_files(file_name='file', magdir='Magdir', exact=False):
 
     entries = get_stored_files("db")
 
-    def store_mimedata(data):
+    def store_mimedata(entry):
         """For a single db entry, calls file(1) and compares it to db data."""
-        entry, _ = data
         metadata = get_full_metadata(entry, file_name, compiled)
         stored_metadata = get_stored_metadata(entry)
         text = "PASS " + entry
@@ -66,9 +62,9 @@ def compare_all_files(file_name='file', magdir='Magdir', exact=False):
         """Call data_print as soon as print lock has been acquired."""
         print_lock.lock(data_print, data)
 
-    for index, entry in enumerate(entries):
+    for entry in entries:
         # Insert tasks into the queue and let them run
-        pool.queueTask(store_mimedata, args=(entry, index % 2),
+        pool.queueTask(store_mimedata, args=(entry, ),
                        callback=data_stored)
 
     # When all tasks are finished, allow the threads to terminate
