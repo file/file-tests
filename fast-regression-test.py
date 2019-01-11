@@ -34,7 +34,7 @@ def test_all_files(exact=False, binary="file"):
 
     print_file_info(binary)
 
-    m = mutex.mutex()
+    print_lock = mutex.mutex()
 
     entries = sorted(get_stored_files("db"))
 
@@ -60,10 +60,10 @@ def test_all_files(exact=False, binary="file"):
         if data[0] == "F":
             global ret
             ret = 1
-        m.unlock()
+        print_lock.unlock()
 
     def data_stored(data):
-        m.lock(data_print, data)
+        print_lock.lock(data_print, data)
 
     # create here so program exits if error occurs earlier
     n_threads = 1
@@ -96,10 +96,10 @@ def main():
 
     optlist, args = getopt.getopt(args, 'b:e')
 
-    for o, a in optlist:
-        if o == '-b':
-            file_binary = a
-        elif o == '-e':
+    for option, arg in optlist:
+        if option == '-b':
+            file_binary = arg
+        elif option == '-e':
             exact = True
         else:
             usage(1)
