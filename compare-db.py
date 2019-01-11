@@ -21,9 +21,9 @@
 from __future__ import print_function
 
 import sys
+import mutex
 from pyfile import *
 from pyfile.threadpool import *
-import mutex
 
 
 def compare_all_files(file_name='file', magdir='Magdir', exact=False):
