@@ -17,6 +17,8 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,
 # USA.
 
+from __future__ import print_function
+
 import os
 import sys
 import getopt
@@ -56,7 +58,7 @@ def test_all_files(exact=False, binary="file"):
         return text
 
     def data_print(data):
-        print data
+        print(data)
         if data[0] == "F":
             global ret
             ret = 1
@@ -75,17 +77,17 @@ def test_all_files(exact=False, binary="file"):
 
     # When all tasks are finished, allow the threads to terminate
     pool.joinAll()
-    print ''
+    print('')
     return ret
 
 
 def usage(ecode):
-    print "Runs regressions."
-    print sys.argv[0] + " [-e] [-b <file-binary>]"
-    print "  Default file_binary='file'"
-    print "Examples:"
-    print "  " + sys.argv[0] + " -e -b '../file -m ../../magic/magic.mgc'"
-    print "  " + sys.argv[0] + " -e"
+    print("Runs regressions.")
+    print(sys.argv[0] + " [-e] [-b <file-binary>]")
+    print("  Default file_binary='file'")
+    print("Examples:")
+    print("  " + sys.argv[0] + " -e -b '../file -m ../../magic/magic.mgc'")
+    print("  " + sys.argv[0] + " -e")
     sys.exit(ecode)
 
 
