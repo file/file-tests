@@ -88,8 +88,8 @@ def usage(ecode):
     print "  " + sys.argv[0] + " -e"
     sys.exit(ecode)
 
-# run this only if started as script from command line
-if __name__ == '__main__':
+
+def main():
     exact = False
     file_binary = "file"
     args = sys.argv[1:]
@@ -105,3 +105,8 @@ if __name__ == '__main__':
             usage(1)
 
     sys.exit(test_all_files(exact, file_binary))
+
+
+# run this only if started as script from command line
+if __name__ == '__main__':
+    main()
