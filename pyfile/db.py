@@ -28,18 +28,21 @@ from cStringIO import StringIO
 import re
 mimetypes.init()
 
+
 def get_stored_metadata(filename):
-    f = open (filename + ".pickle", 'r')
+    f = open(filename + ".pickle", 'r')
     p = pickle.load(f)
     f.close()
     return p
 
+
 def set_stored_metadata(filename, metadata):
-    f = open (filename + ".pickle", 'w')
+    f = open(filename + ".pickle", 'w')
     pickle.dump(metadata, f)
     f.close()
 
-def is_regression(m1, m2, exact = False, ratio = 0.7):
+
+def is_regression(m1, m2, exact=False, ratio=0.7):
     if m1['output'] == None or m2['output'] == None:
         return True
     if m1['output'] != m2['output']:
@@ -68,13 +71,14 @@ def is_regression(m1, m2, exact = False, ratio = 0.7):
             expected = mimetypes.types_map[ext]
             if expected == mime:
                 return True
-            #else:
-            #print >> sys.stderr, "Expected:%s" % (expected)
-        #print >> sys.stderr, "Expected:%s\nGot     :%s" % (old_mime, mime)
+            # else:
+            #   print >> sys.stderr, "Expected:%s" % (expected)
+        # print >> sys.stderr, "Expected:%s\nGot     :%s" % (old_mime, mime)
         return True
-    return False;
+    return False
 
-def get_diff(m1, m2, exact = False, ratio = 0.7):
+
+def get_diff(m1, m2, exact=False, ratio=0.7):
     if m1['output'] == None or m2['output'] == None:
         return "Output is None, was there error during File execution?"
 
@@ -120,7 +124,8 @@ def get_diff(m1, m2, exact = False, ratio = 0.7):
                 text += line
     return text
 
-def get_stored_files(dir_name, subdir = True, *args):
+
+def get_stored_files(dir_name, subdir=True, *args):
     '''Return a list of file names found in directory 'dir_name'
     If 'subdir' is True, recursively access subdirectories under 'dir_name'.
     Additional arguments, if any, are file extensions to match filenames.
@@ -146,6 +151,6 @@ def get_stored_files(dir_name, subdir = True, *args):
                     fileList.append(dirfile)
         # recursively access file names in subdirectories
         elif os.path.isdir(dirfile) and subdir:
-            #print "Accessing directory:", dirfile
+            # print "Accessing directory:", dirfile
             fileList.extend(get_stored_files(dirfile, subdir, *args))
     return fileList
