@@ -17,6 +17,8 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,
 # USA.
 
+"""Do a quick comparison of output of file(1) with that saved in db."""
+
 from __future__ import print_function
 
 import sys
@@ -26,10 +28,13 @@ from pyfile import *
 from pyfile.threadpool import *
 
 
+#: return value from test_all_files
+#: TODO: make this a nonlocal in py3
 ret = 0
 
 
 def test_all_files(exact=False, binary="file"):
+    """Compare output of given file(1) binary with db for all entries."""
     global ret
     ret = 0
 
@@ -40,6 +45,7 @@ def test_all_files(exact=False, binary="file"):
     entries = sorted(get_stored_files("db"))
 
     def store_mimedata(filename):
+        """Compare file(1) output with db for single entry."""
         metadata = get_simple_metadata(filename, binary)
         try:
             stored_metadata = get_stored_metadata(filename)
@@ -57,6 +63,7 @@ def test_all_files(exact=False, binary="file"):
         return text
 
     def data_print(data):
+        """Print given text, set global return value, unlock print lock."""
         print(data)
         if data[0] == "F":
             global ret
@@ -64,6 +71,7 @@ def test_all_files(exact=False, binary="file"):
         print_lock.unlock()
 
     def data_stored(data):
+        """Acquire print lock and call :py:function:`data_print`."""
         print_lock.lock(data_print, data)
 
     # create here so program exits if error occurs earlier
@@ -81,6 +89,7 @@ def test_all_files(exact=False, binary="file"):
 
 
 def usage(ecode):
+    """Print info on how to use this program. Return given code."""
     print("Runs regressions.")
     print(sys.argv[0] + " [-e] [-b <file-binary>]")
     print("  Default file_binary='file'")
@@ -91,6 +100,7 @@ def usage(ecode):
 
 
 def main():
+    """Called when running this as script. Parse args, call test_all_files."""
     exact = False
     file_binary = "file"
     args = sys.argv[1:]
