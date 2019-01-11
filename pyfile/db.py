@@ -13,8 +13,9 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with this program; if not, write to the Free Software
-# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
-#
+# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,
+# USA.
+
 
 import os
 import sys
@@ -48,16 +49,18 @@ def is_regression(m1, m2, exact = False, ratio = 0.7):
                 if m1['output'] != m2['output']:
                     return True
                 else:
-                    r = difflib.SequenceMatcher(None, m1['output'], m2['output']).ratio()
+                    r = difflib.SequenceMatcher(None, m1['output'],
+                                                m2['output']).ratio()
                 if (r < ratio):
-                    #print >> sys.stderr, "Expected:%sGot     :%s" % (m2['output'], m1['output'])
+                    # print >> sys.stderr, "Expected:%sGot     :%s" \
+                    #          % (m2['output'], m1['output'])
                     return True
 
     mime = m2['mime'].split(":")[-1].split(";")[0].strip()
     old_mime = m1['mime'].split(":")[-1].split(";")[0].strip()
 
-    # if old_mime is empty, then previous version of File didn't know that filetype.
-    # we will hope that new mime is right.
+    # if old_mime is empty, then previous version of File didn't know that
+    # filetype.  we will hope that new mime is right.
     if old_mime != mime and len(old_mime) != 0:
         ext = os.path.splitext(mime)[-1]
         # it's not error if new mimetype is correct type for that extension.
@@ -95,8 +98,8 @@ def get_diff(m1, m2, exact = False, ratio = 0.7):
 
     want_mime_diff = False
 
-    # if old_mime is empty, then previous version of File didn't know that filetype.
-    # we will hope that new mime is right.
+    # if old_mime is empty, then previous version of File didn't know that
+    # filetype.  we will hope that new mime is right.
     if old_mime != mime and len(old_mime) != 0:
         ext = os.path.splitext(mime)[-1]
         # it's not error if new mimetype is correct type for that extension.
@@ -109,16 +112,19 @@ def get_diff(m1, m2, exact = False, ratio = 0.7):
         text += "Expected :%sGot      :%s" % (m1['mime'], m2['mime'])
 
     if text != "":
-        if m1.has_key('pattern') and m2.has_key('pattern') and m1['pattern'] != "" and m2['pattern'] != "":
-            for line in difflib.unified_diff(StringIO(m1['pattern']).readlines(), StringIO(m2['pattern']).readlines()):
+        if m1.has_key('pattern') and m2.has_key('pattern') and \
+                m1['pattern'] != "" and m2['pattern'] != "":
+            for line in \
+                    difflib.unified_diff(StringIO(m1['pattern']).readlines(),
+                                         StringIO(m2['pattern']).readlines()):
                 text += line
     return text
 
 def get_stored_files(dir_name, subdir = True, *args):
     '''Return a list of file names found in directory 'dir_name'
     If 'subdir' is True, recursively access subdirectories under 'dir_name'.
-    Additional arguments, if any, are file extensions to match filenames. Matched
-    file names are added to the list.
+    Additional arguments, if any, are file extensions to match filenames.
+    Matched file names are added to the list.
     If there are no additional arguments, all files found in the directory are
     added to the list.
     Example usage: fileList = dirEntries(r'H:\TEMP', False, 'txt', 'py')
@@ -132,7 +138,8 @@ def get_stored_files(dir_name, subdir = True, *args):
         dirfile = os.path.join(dir_name, file)
         if os.path.isfile(dirfile):
             if not args:
-                if not dirfile.endswith("pickle") and not dirfile.endswith(".source.txt"):
+                if not dirfile.endswith("pickle") and \
+                        not dirfile.endswith(".source.txt"):
                     fileList.append(dirfile)
             else:
                 if os.path.splitext(dirfile)[1][1:] in args:
