@@ -24,10 +24,11 @@ from pyfile import *
 from pyfile.threadpool import *
 import mutex
 
+
 ret = 0
 
-def test_all_files(exact = False, binary = "file"):
 
+def test_all_files(exact=False, binary="file"):
     global ret
     ret = 0
 
@@ -76,6 +77,7 @@ def test_all_files(exact = False, binary = "file"):
     pool.joinAll()
     print ''
     return ret
+
 
 def usage(ecode):
     print "Runs regressions."
