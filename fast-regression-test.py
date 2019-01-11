@@ -14,8 +14,8 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with this program; if not, write to the Free Software
-# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
-#
+# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,
+# USA.
 
 import os
 import sys
@@ -43,12 +43,15 @@ def test_all_files(exact = False, binary = "file"):
             stored_metadata = get_stored_metadata(filename)
         except IOError:
             # file not found or corrupt
-            text = "FAIL " + filename + "\n" + "FAIL   could not find stored metadata!\n\
-This can mean that the File failed to generate any output for this file."
+            text = "FAIL " + filename + "\n" + \
+                   "FAIL   could not find stored metadata!\n" + \
+                   "This can mean that the File failed to generate " + \
+                   "any output for this file."
         else:
             text = "PASS " + filename
             if is_regression(stored_metadata, metadata, exact):
-                text = "FAIL " + filename + "\n" + get_diff(stored_metadata, metadata, exact)
+                text = "FAIL " + filename + "\n" + \
+                       get_diff(stored_metadata, metadata, exact)
         return text
 
     def data_print(data):
@@ -61,7 +64,9 @@ This can mean that the File failed to generate any output for this file."
     def data_stored(data):
         m.lock(data_print, data)
 
-    pool = ThreadPool(1)  # create here so program exits if error occurs earlier
+    # create here so program exits if error occurs earlier
+    n_threads = 1
+    pool = ThreadPool(n_threads)
 
     for entry in entries:
         # Insert tasks into the queue and let them run
