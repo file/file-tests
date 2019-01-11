@@ -19,12 +19,11 @@
 
 from __future__ import print_function
 
-import os
 import sys
 import getopt
+import mutex
 from pyfile import *
 from pyfile.threadpool import *
-import mutex
 
 
 ret = 0
