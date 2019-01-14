@@ -16,6 +16,8 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,
 # USA.
 
+"""Wrapper for `file(1)` with additional pattern compilation & search."""
+
 from __future__ import print_function
 
 import os
@@ -27,6 +29,7 @@ from progressbar import ProgressBar
 
 
 def print_file_info(file_binary='file'):
+    """`print()` absolute path and version of given `file(1)` binary."""
     if not file_binary.startswith("/") and not file_binary.startswith("./") \
             and not file_binary.startswith("../"):
         popen = Popen('which ' + file_binary, shell=True, bufsize=4096,
@@ -50,6 +53,7 @@ def print_file_info(file_binary='file'):
 
 
 def mkdir_p(path):
+    """Wrapper around :py:func:`os.makedirs` that catches EEXIST."""
     try:
         os.makedirs(path)
     except OSError as exc:  # Python >2.5
@@ -60,6 +64,7 @@ def mkdir_p(path):
 
 
 def get_file_output(filename, binary="file"):
+    """Run file(1) binary on given filename, return output."""
     popen = Popen(binary + " -b " + filename, shell=True, bufsize=4096,
                   stdout=PIPE, stderr=PIPE)
     pipe = popen.stdout
@@ -72,6 +77,7 @@ def get_file_output(filename, binary="file"):
 
 
 def get_file_mime(filename, binary="file"):
+    """Run file(1) binary with mime option on given filename, return output."""
     popen = Popen(binary + " -ib " + filename, shell=True, bufsize=4096,
                   stdout=PIPE, stderr=PIPE)
     pipe = popen.stdout
@@ -84,6 +90,14 @@ def get_file_mime(filename, binary="file"):
 
 
 def get_simple_metadata(filename, binary="file"):
+    """
+    Get output of `file` and `file -i` on given filename.
+
+    Calls :py:func:`get_file_output` and :py:func:`get_file_mime` and saves
+    them in a `dict` as fields `output` and `mime`.
+
+    Quick version of :py:func:`get_full_metadata`.
+    """
     metadata = {}
     metadata['output'] = get_file_output(filename, binary)
     metadata['mime'] = get_file_mime(filename, binary)
@@ -92,6 +106,20 @@ def get_simple_metadata(filename, binary="file"):
 
 def _split_patterns(pattern_id=0, magdir="Magdir", file_name="file",
                     only_name=False):
+    """
+    Actual worker function for :py:func:split_patterns`.
+
+    Creates `output` dir in `.mgc_temp`. Loops over pattern files in `magdir`
+    and for each pattern found in each file creates an extra file in `output`
+    dir with just that pattern.
+
+    Output file name are just their pattern_id, starting with id given as arg.
+
+    Arg `file_name` only used for getting dir name through hashing. `file(1)`
+    is not called here.
+
+    Returns number of pattern files thus created.
+    """
     FILE_BINARY_HASH = hashlib.sha224(file_name).hexdigest()
     outputdir = ".mgc_temp/" + FILE_BINARY_HASH + "/output"
     mkdir_p(outputdir)
@@ -118,6 +146,7 @@ def _split_patterns(pattern_id=0, magdir="Magdir", file_name="file",
             # print(line.strip()
             if line.strip()[0].isdigit() or \
                     (line.strip()[0] == '-' and line.strip()[1].isdigit()):
+                # start of next pattern. first write finished pattern to file
                 if in_pattern:
                     with open(os.path.join(outputdir, str(pattern_id)), "w") \
                             as writer:
@@ -146,6 +175,12 @@ def _split_patterns(pattern_id=0, magdir="Magdir", file_name="file",
 
 
 def split_patterns(magdir="Magdir", file_name="file"):
+    """
+    Given a dir with magic pattern files, create dir with isolated patterns.
+
+    First create isolated pattern files for patterns with a "name" attribute.
+    Then create pattern files for all patterns.
+    """
     pattern_id = _split_patterns(0, magdir, file_name, True)
     _split_patterns(pattern_id, magdir, file_name)
 
@@ -153,6 +188,16 @@ def split_patterns(magdir="Magdir", file_name="file"):
 
 
 def compile_patterns(file_name="file", file_binary="file"):
+    """
+    Creates increasingly complex magic files.
+
+    Loops over isolated patterns, re-assembles original magic files pattern by
+    pattern and always re-creates a magic file. Creates files
+    `.mgc_temp/HASH/.find-magic.tmp.PATTERN-ID.mgc` used by
+    :py:func:`get_full_metadata`.
+
+    This requires quite some space on disc.
+    """
     FILE_BINARY_HASH = hashlib.sha224(file_name).hexdigest()
     magdir = ".mgc_temp/" + FILE_BINARY_HASH + "/output"
     files = os.listdir(magdir)
@@ -171,9 +216,12 @@ def compile_patterns(file_name="file", file_binary="file"):
         if not os.path.exists(out_file):
             with open(os.path.join(magdir, loop_file_name), "r") as reader:
                 buf = reader.read()
-            first_line = buf.split("\n")[0][1:len(buf.split("\n")[0])]
+            # read name of original pattern file in magic dir from first line
+            mfile = buf.split("\n")[0][1:]
+
+            # iteratively re-assemble original pattern file
             with open(os.path.join(".mgc_temp/" + FILE_BINARY_HASH + \
-                                   "/tmp/" + first_line), "a") as appender:
+                                   "/tmp/" + mfile), "a") as appender:
                 appender.write(buf)
                 appender.flush()
             # tmp = open(".mgc_temp/" + FILE_BINARY_HASH + "/.find-magic.tmp",
@@ -212,7 +260,11 @@ def compile_patterns(file_name="file", file_binary="file"):
 def get_full_metadata(infile, file_name="file", compiled=True,
                       file_binary="file"):
     """
-    file-output plus binary search to find the relevant line in magic file
+    file-output plus binary search to find the relevant line in magic file.
+
+    Run `file(1)` repeatedly with different magic files created in
+    :py:func`compile_patterns` until the one pattern is identified that defines
+    the `file(1)` output of the given `infile`.
     """
     COMPILED_SUFFIX = ".mgc"
     if not compiled:
@@ -225,7 +277,7 @@ def get_full_metadata(infile, file_name="file", compiled=True,
     tlist = []
     mkdir_p(".mgc_temp")
 
-    # Divide and conquer
+    # Divide and conquer: find the relevant pattern
     idx_left = 0                # left-most index to consider
     idx_rigt = len(files) - 1   # right-most index to consider
     idx_curr = idx_rigt         # some index in the middle we currently test
@@ -247,7 +299,7 @@ def get_full_metadata(infile, file_name="file", compiled=True,
         if popen.wait() != 0:
             return dict(output=None, mime=None, pattern=None, suffix=None,
                         err=(cmd, out_curr.strip()))
-        if out_rigt == None:
+        if out_rigt == None:   # first iteration, uses complete magic file
             out_rigt = out_curr
         # idx_left---------idx_curr---------idx_rigt
         # out_left   ==    out_curr     \solution here
@@ -260,7 +312,10 @@ def get_full_metadata(infile, file_name="file", compiled=True,
             idx_rigt = idx_curr
             out_rigt = out_curr
 
+        # are we done?
         if idx_curr == idx_left + (idx_rigt - idx_left) / 2:
+            # idx_* are so close together that next iteration idx_curr would
+            # not change --> we are done
             if out_rigt != out_curr:
                 idx_curr += 1
                 out_curr = out_rigt
@@ -294,11 +349,12 @@ def get_full_metadata(infile, file_name="file", compiled=True,
                 buf = ""
             return dict(output=out_curr, mime=mime, pattern=buf, suffix=suffix)
         else:
-            # set idx_curr to middle between idx_left and idx_rigt
+            # continue: set idx_curr to middle between idx_left and idx_rigt
             idx_curr = idx_left + (idx_rigt - idx_left) / 2
 
 
 def is_compilation_supported(file_name="file", file_binary="file"):
+    """Determine whether data from :py:func:`compile_patterns` is available."""
     FILE_BINARY_HASH = hashlib.sha224(file_name).hexdigest()
     if os.system(file_binary + " /bin/sh -m .mgc_temp/" + FILE_BINARY_HASH +
                  "/.find-magic.tmp.0.mgc > /dev/null") != 0:
