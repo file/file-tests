@@ -20,9 +20,9 @@ import os
 import sys
 import errno
 from subprocess import Popen, PIPE
-from progressbar import ProgressBar
 import hashlib
 import re
+from progressbar import ProgressBar
 
 
 def print_file_info(file_binary='file'):
