@@ -142,7 +142,7 @@ def get_diff(m1, m2, exact=False, ratio=0.7):
         text += "Expected :%sGot      :%s" % (m1['mime'], m2['mime'])
 
     if text != "":
-        if m1.has_key('pattern') and m2.has_key('pattern') and \
+        if ('pattern' in m1) and ('pattern' in m2) and \
                 m1['pattern'] != "" and m2['pattern'] != "":
             for line in \
                     difflib.unified_diff(StringIO(m1['pattern']).readlines(),
