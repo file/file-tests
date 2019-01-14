@@ -57,7 +57,7 @@ def is_regression(m1, m2, exact=False, ratio=0.7):
 
     .. todo:: Reduce code duplication with function get_diff
     """
-    if m1['output'] == None or m2['output'] == None:
+    if m1['output'] is None or m2['output'] is None:
         return True
     if m1['output'] != m2['output']:
         # previous file didn't detect it, so we hope new output is ok
@@ -68,7 +68,7 @@ def is_regression(m1, m2, exact=False, ratio=0.7):
             else:
                 match = difflib.SequenceMatcher(None, m1['output'],
                                                 m2['output']).ratio()
-                if (match < ratio):
+                if match < ratio:
                     # print >> sys.stderr, "Expected:%sGot     :%s" \
                     #          % (m2['output'], m1['output'])
                     return True
@@ -78,7 +78,7 @@ def is_regression(m1, m2, exact=False, ratio=0.7):
 
     # if old_mime is empty, then previous version of File didn't know that
     # filetype.  we will hope that new mime is right.
-    if old_mime != mime and len(old_mime) != 0:
+    if old_mime and old_mime != mime:
         ext = os.path.splitext(mime)[-1]
         # it's not error if new mimetype is correct type for that extension.
         if ext in mimetypes.types_map.keys():
@@ -101,7 +101,7 @@ def get_diff(m1, m2, exact=False, ratio=0.7):
 
     .. todo:: Reduce code duplication with function is_regression
     """
-    if m1['output'] == None or m2['output'] == None:
+    if m1['output'] is None or m2['output'] is None:
         return "Output is None, was there error during File execution?"
 
     text = ""
@@ -115,7 +115,7 @@ def get_diff(m1, m2, exact=False, ratio=0.7):
             else:
                 match = difflib.SequenceMatcher(None, m1['output'],
                                                 m2['output']).ratio()
-                if (match < ratio):
+                if match < ratio:
                     text = "Expected :%sGot      :%s" % (m1['output'],
                                                          m2['output'])
 
@@ -126,7 +126,7 @@ def get_diff(m1, m2, exact=False, ratio=0.7):
 
     # if old_mime is empty, then previous version of File didn't know that
     # filetype.  we will hope that new mime is right.
-    if old_mime != mime and len(old_mime) != 0:
+    if old_mime and old_mime != mime:
         ext = os.path.splitext(mime)[-1]
         # it's not error if new mimetype is correct type for that extension.
         if ext in mimetypes.types_map.keys():
