@@ -20,14 +20,10 @@
 
 
 import os
-import sys
-import errno
-from subprocess import Popen, PIPE
 import pickle
 import difflib
 import mimetypes
 from cStringIO import StringIO
-import re
 mimetypes.init()
 
 
