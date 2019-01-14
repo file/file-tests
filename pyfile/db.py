@@ -16,6 +16,8 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,
 # USA.
 
+"""Load file(1) output from db, compare it, store output in db."""
+
 
 import os
 import sys
@@ -30,16 +32,33 @@ mimetypes.init()
 
 
 def get_stored_metadata(filename):
+    """Retrieve metadata stored for given entry in db."""
     with open(filename + ".pickle", 'r') as file_handle:
         return pickle.load(file_handle)
 
 
 def set_stored_metadata(filename, metadata):
+    """Store given metadata for given entry in db."""
     with open(filename + ".pickle", 'w') as file_handle:
         pickle.dump(metadata, file_handle)
 
 
 def is_regression(m1, m2, exact=False, ratio=0.7):
+    """
+    Determine whether two file(1) outputs for same entry are incompatible.
+
+    Metadata can be obtained from py:func`get_stored_metadata` or
+    :py:func:`file.get_full_metadata`.
+
+    :param dict m1: metadata for entry1.
+    :param dict m2: metadata for entry2.
+    :param bool exact: whether output has to match letter for letter (True) or
+                       whether slight changes are allowed.
+    :param float ratio: Amount of difference required for slightly different
+                        entries to be considered the same:
+                        `0` = all changes allowed; `1` = need perfect match.
+    :returns: True if there is a (significant) difference between `m1` and `m2`
+    """
     if m1['output'] == None or m2['output'] == None:
         return True
     if m1['output'] != m2['output']:
@@ -76,6 +95,12 @@ def is_regression(m1, m2, exact=False, ratio=0.7):
 
 
 def get_diff(m1, m2, exact=False, ratio=0.7):
+    """
+    Get textual description about how well file(1) outputs match.
+
+    Like :py:func:`is_regression`, except the output is a description instead
+    of just a bool.
+    """
     if m1['output'] == None or m2['output'] == None:
         return "Output is None, was there error during File execution?"
 
@@ -123,7 +148,9 @@ def get_diff(m1, m2, exact=False, ratio=0.7):
 
 
 def get_stored_files(dir_name, subdir=True, *args):
-    '''Return a list of file names found in directory 'dir_name'
+    r"""
+    Return a list of file names found in directory 'dir_name'.
+
     If 'subdir' is True, recursively access subdirectories under 'dir_name'.
     Additional arguments, if any, are file extensions to match filenames.
     Matched file names are added to the list.
@@ -134,7 +161,7 @@ def get_stored_files(dir_name, subdir=True, *args):
     Example usage: fileList = dirEntries(r'H:\TEMP', True)
     All files and all the files in subdirectories under H:\TEMP will be added
     to the list.
-    '''
+    """
     fileList = []
     for file in os.listdir(dir_name):
         dirfile = os.path.join(dir_name, file)
