@@ -58,6 +58,8 @@ def is_regression(m1, m2, exact=False, ratio=0.7):
                         entries to be considered the same:
                         `0` = all changes allowed; `1` = need perfect match.
     :returns: True if there is a (significant) difference between `m1` and `m2`
+
+    .. todo:: Reduce code duplication with function get_diff
     """
     if m1['output'] == None or m2['output'] == None:
         return True
@@ -100,6 +102,8 @@ def get_diff(m1, m2, exact=False, ratio=0.7):
 
     Like :py:func:`is_regression`, except the output is a description instead
     of just a bool.
+
+    .. todo:: Reduce code duplication with function is_regression
     """
     if m1['output'] == None or m2['output'] == None:
         return "Output is None, was there error during File execution?"
@@ -133,7 +137,7 @@ def get_diff(m1, m2, exact=False, ratio=0.7):
             expected = mimetypes.types_map[ext]
             if expected != mime:
                 want_mime_diff = True
-        want_mime_diff = True
+        want_mime_diff = True    # TODO: this invalidates lines above
     if want_mime_diff:
         text += "Expected :%sGot      :%s" % (m1['mime'], m2['mime'])
 
