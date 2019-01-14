@@ -125,7 +125,7 @@ def _split_patterns(pattern_id=0, magdir="Magdir", file_name="file",
     mkdir_p(outputdir)
 
     files = os.listdir(magdir)
-    files.sort()
+    files.sort()   # TODO: sort like the others?
     if len(files) == 0:
         raise ValueError('no files found in Magdir {0}'
                          .format(os.path.join(os.getcwd(), magdir)))
@@ -246,7 +246,7 @@ def compile_patterns(file_name="file", file_binary="file"):
             if ret_code != 0:
                 raise ValueError('command {0} returned non-zero exit code {1}!'
                                  .format(cmd, ret_code))
-            if os.path.exists("tmp.mgc"):
+            if os.path.exists("tmp.mgc"):    # TODO: move without forking shell
                 ret_code = os.system("mv tmp.mgc " + out_file)
                 if ret_code != 0:
                     raise ValueError('moving tmp.mgc to {0} failed with code '
