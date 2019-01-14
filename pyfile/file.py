@@ -106,12 +106,12 @@ def _split_patterns(pattern_id=0, magdir="Magdir", file_name="file",
         mfile = os.path.join(magdir, loop_file_name)
         if os.path.isdir(mfile):
             continue
-        fd = open(mfile, "r")
         buff = ""
         in_pattern = False
         prog.increment_amount()
         print(prog, "Splitting patterns", end='\r', flush=True)
-        lines = fd.readlines()
+        with open(mfile, "r") as reader:
+            lines = reader.readlines()
         for line_idx, line in enumerate(lines):
             if line.strip().startswith("#") or len(line.strip()) == 0:
                 continue
@@ -119,10 +119,9 @@ def _split_patterns(pattern_id=0, magdir="Magdir", file_name="file",
             if line.strip()[0].isdigit() or \
                     (line.strip()[0] == '-' and line.strip()[1].isdigit()):
                 if in_pattern:
-                    fd_out = open(os.path.join(outputdir, str(pattern_id)),
-                                  "w")
-                    fd_out.write(buff)
-                    fd_out.close()
+                    with open(os.path.join(outputdir, str(pattern_id)), "w") \
+                            as writer:
+                        writer.write(buff)
                     in_pattern = False
                 buff = ""
                 if only_name:
@@ -141,10 +140,8 @@ def _split_patterns(pattern_id=0, magdir="Magdir", file_name="file",
                     print("broken pattern in file '" + loop_file_name + "':" +
                           str(line_idx))
         if in_pattern:
-            fd_out = open(os.path.join(outputdir, str(pattern_id)), "w")
-            fd_out.write(buff)
-            fd_out.close()
-        fd.close()
+            with open(os.path.join(outputdir, str(pattern_id)), "w") as writer:
+                writer.write(buff)
     return pattern_id
 
 
@@ -172,15 +169,13 @@ def compile_patterns(file_name="file", file_binary="file"):
         out_file = ".mgc_temp/" + FILE_BINARY_HASH + "/.find-magic.tmp." + \
                    str(file_index) + ".mgc"
         if not os.path.exists(out_file):
-            fd = open(os.path.join(magdir, loop_file_name), "r")
-            buf = fd.read()
-            fd.close()
+            with open(os.path.join(magdir, loop_file_name), "r") as reader:
+                buf = reader.read()
             first_line = buf.split("\n")[0][1:len(buf.split("\n")[0])]
-            tmp = open(os.path.join(".mgc_temp/" + FILE_BINARY_HASH + \
-                                    "/tmp/" + first_line), "a")
-            tmp.write(buf)
-            tmp.flush()
-            tmp.close()
+            with open(os.path.join(".mgc_temp/" + FILE_BINARY_HASH + \
+                                   "/tmp/" + first_line), "a") as appender:
+                appender.write(buf)
+                appender.flush()
             # tmp = open(".mgc_temp/" + FILE_BINARY_HASH + "/.find-magic.tmp",
             #            "a")
             # tmp.write(buf)
@@ -273,9 +268,8 @@ def get_full_metadata(infile, file_name="file", compiled=True,
             # if file_curr in PATTERNS:
             # PATTERNS.remove(file_curr);
             # print(idx_curr, file_curr)
-            fd = open(os.path.join(magdir, file_curr), "r")
-            buf = fd.read()
-            fd.close()
+            with open(os.path.join(magdir, file_curr), "r") as reader:
+                buf = reader.read()
             if os.path.exists(os.path.dirname(FILE_BINARY) +
                               "/../magic/magic.mime.mgc"):
                 cmd = FILE_BINARY + " -bi " + infile + " -m " + \
