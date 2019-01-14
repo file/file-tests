@@ -16,8 +16,9 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,
 # USA.
 
+from __future__ import print_function
+
 import os
-import sys
 import errno
 from subprocess import Popen, PIPE
 import hashlib
@@ -44,8 +45,8 @@ def print_file_info(file_binary='file'):
     if popen.wait() not in (0, 1):
         raise ValueError('could not query {0} for its version ({1})!'
                          .format(file_binary, output_ver))
-    print 'using file from', output_which
-    print 'version is', output_ver
+    print('using file from', output_which)
+    print('version is', output_ver)
 
 
 def mkdir_p(path):
@@ -109,13 +110,12 @@ def _split_patterns(pattern_id=0, magdir="Magdir", file_name="file",
         buff = ""
         in_pattern = False
         prog.increment_amount()
-        print prog, "Splitting patterns", '\r',
-        sys.stdout.flush()
+        print(prog, "Splitting patterns", end='\r', flush=True)
         lines = fd.readlines()
         for i, line in enumerate(lines):
             if line.strip().startswith("#") or len(line.strip()) == 0:
                 continue
-            # print line.strip()
+            # print(line.strip()
             if line.strip()[0].isdigit() or \
                     (line.strip()[0] == '-' and line.strip()[1].isdigit()):
                 if in_pattern:
@@ -138,7 +138,7 @@ def _split_patterns(pattern_id=0, magdir="Magdir", file_name="file",
                 if in_pattern:
                     buff += line
                 elif only_name == False:
-                    print "broken pattern in file '" + f + "':" + str(i)
+                    print("broken pattern in file '" + f + "':" + str(i))
         if in_pattern:
             fd_out = open(os.path.join(outputdir, str(pattern_id)), "w")
             fd_out.write(buff)
@@ -151,7 +151,7 @@ def split_patterns(magdir="Magdir", file_name="file"):
     pattern_id = _split_patterns(0, magdir, file_name, True)
     _split_patterns(pattern_id, magdir, file_name)
 
-    print ''
+    print('')
 
 
 def compile_patterns(file_name="file", file_binary="file"):
@@ -186,10 +186,10 @@ def compile_patterns(file_name="file", file_binary="file"):
             # tmp.flush()
             # tmp.close()
             # os.chdir(".mgc_temp")
-            # print "cp .mgc_temp/.find-magic.tmp " + \
-            #       ".mgc_temp/.find-magic.tmp." + str(i) + ";" + \
-            #       FILE_BINARY + " -C -m .mgc_temp/.find-magic.tmp." + str(i)\
-            #       + ";"
+            # print("cp .mgc_temp/.find-magic.tmp " +
+            #       ".mgc_temp/.find-magic.tmp." + str(i) + ";" +
+            #       FILE_BINARY + " -C -m .mgc_temp/.find-magic.tmp." + str(i)
+            #       + ";")
             # mv .find-magic.tmp." + str(i) + ".mgc .mgc_temp/;
 
             # os.system("cp .mgc_temp/" + FILE_BINARY_HASH +
@@ -209,9 +209,8 @@ def compile_patterns(file_name="file", file_binary="file"):
                                      '{1}!'.format(out_file, ret_code))
             # os.chdir("..")
         prog.increment_amount()
-        print prog, "Compiling patterns", '\r',
-        sys.stdout.flush()
-    print ""
+        print(prog, "Compiling patterns", end='\r', flush=True)
+    print("")
 
 
 def get_full_metadata(infile, file_name="file", compiled=True,
@@ -240,8 +239,9 @@ def get_full_metadata(infile, file_name="file", compiled=True,
         f = files[i]
         cmd = FILE_BINARY + " -b " + infile + " -m .mgc_temp/" + \
               FILE_BINARY_HASH + "/.find-magic.tmp." + str(i) + COMPILED_SUFFIX
-        # print FILE_BINARY + " " + infile + " -m .mgc_temp/" + \
-        #     FILE_BINARY_HASH + "/.find-magic.tmp." + str(i) + COMPILED_SUFFIX
+        # print(FILE_BINARY + " " + infile + " -m .mgc_temp/" +
+        #       FILE_BINARY_HASH + "/.find-magic.tmp." + str(i) +
+        #       COMPILED_SUFFIX)
         popen = Popen(cmd, shell=True, bufsize=4096, stdout=PIPE)
         pipe = popen.stdout
         last = pipe.read()
@@ -268,7 +268,7 @@ def get_full_metadata(infile, file_name="file", compiled=True,
             f = files[i]
             # if f in PATTERNS:
             # PATTERNS.remove(f);
-            # print i, f
+            # print(i, f)
             fd = open(os.path.join(magdir, f), "r")
             buf = fd.read()
             fd.close()
@@ -303,11 +303,11 @@ def is_compilation_supported(file_name="file", file_binary="file"):
     FILE_BINARY_HASH = hashlib.sha224(file_name).hexdigest()
     if os.system(file_binary + " /bin/sh -m .mgc_temp/" + FILE_BINARY_HASH +
                  "/.find-magic.tmp.0.mgc > /dev/null") != 0:
-        print ''
-        print "This file version doesn't support compiled patterns " \
-              "=> they won't be used"
+        print('')
+        print("This file version doesn't support compiled patterns "
+              "=> they won't be used")
         return False
     else:
-        print 'Compiled patterns will be used'
-        print ''
+        print('Compiled patterns will be used')
+        print('')
         return True
