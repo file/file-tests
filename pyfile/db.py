@@ -48,9 +48,9 @@ def is_regression(m1, m2, exact=False, ratio=0.7):
             if exact:
                 if m1['output'] != m2['output']:
                     return True
-                else:
-                    match = difflib.SequenceMatcher(None, m1['output'],
-                                                    m2['output']).ratio()
+            else:
+                match = difflib.SequenceMatcher(None, m1['output'],
+                                                m2['output']).ratio()
                 if (match < ratio):
                     # print >> sys.stderr, "Expected:%sGot     :%s" \
                     #          % (m2['output'], m1['output'])
