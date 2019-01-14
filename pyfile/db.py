@@ -30,16 +30,13 @@ mimetypes.init()
 
 
 def get_stored_metadata(filename):
-    f = open(filename + ".pickle", 'r')
-    p = pickle.load(f)
-    f.close()
-    return p
+    with open(filename + ".pickle", 'r') as file_handle:
+        return pickle.load(file_handle)
 
 
 def set_stored_metadata(filename, metadata):
-    f = open(filename + ".pickle", 'w')
-    pickle.dump(metadata, f)
-    f.close()
+    with open(filename + ".pickle", 'w') as file_handle:
+        pickle.dump(metadata, file_handle)
 
 
 def is_regression(m1, m2, exact=False, ratio=0.7):
