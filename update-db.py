@@ -79,7 +79,8 @@ def update_all_files(file_name='file', magdir='Magdir', file_binary='file'):
             return
         prog.increment_amount()
         if not hide:
-            print(prog, "Updating database", end='\r', flush=True)
+            print(prog, "Updating database", end='\r')
+            sys.stdout.flush()
 
     # create thread pool here, so program exits if error occurs earlier
     n_threads = 4   # TODO: probably need this instead of 2 in queueTasks

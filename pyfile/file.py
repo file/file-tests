@@ -21,6 +21,7 @@
 from __future__ import print_function
 
 import os
+import sys
 import errno
 from subprocess import Popen, PIPE
 import hashlib
@@ -137,7 +138,8 @@ def _split_patterns(pattern_id=0, magdir="Magdir", file_name="file",
         buff = ""
         in_pattern = False
         prog.increment_amount()
-        print(prog, "Splitting patterns", end='\r', flush=True)
+        print(prog, "Splitting patterns", end='\r')
+        sys.stdout.flush()
         with open(mfile, "r") as reader:
             lines = reader.readlines()
         for line_idx, line in enumerate(lines):
@@ -253,7 +255,8 @@ def compile_patterns(file_name="file", file_binary="file"):
                                      '{1}!'.format(out_file, ret_code))
             # os.chdir("..")
         prog.increment_amount()
-        print(prog, "Compiling patterns", end='\r', flush=True)
+        print(prog, "Compiling patterns", end='\r')
+        sys.stdout.flush()
     print("")
 
 
