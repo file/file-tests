@@ -88,7 +88,7 @@ def update_all_files(file_name='file', magdir='Magdir', file_binary='file'):
     for index, entry in enumerate(entries):
         # Insert tasks into the queue and let them run
         pool.queueTask(store_mimedata, args=(entry, index % 2),
-                       callback=data_stored)
+                       taskCallback=data_stored)
         if global_error:
             print("Error when executing File binary")
             break
