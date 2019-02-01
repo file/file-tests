@@ -1,0 +1,4 @@
+AUTHOR: Intra2net <info@intra2net.com>
+URL: Created it myself
+LICENSE: public domain
+NOTE: AppleDouble files appear in folder __MACOSX of zip files created on MacOSX systems with same name and path as the "real" zip file contents

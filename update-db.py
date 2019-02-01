@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+
 # Copyright (C) 2012 Red Hat, Inc.
 # Authors: Jan Kaluza <jkaluza@redhat.com>
 #
@@ -14,96 +15,128 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with this program; if not, write to the Free Software
-# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
-#
+# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,
+# USA.
+
+"""Run file(1) on all entries in db folder and save the output."""
+
+from __future__ import print_function
 
 import os
 import sys
 import getopt
 from pyfile import *
 from pyfile.progressbar import ProgressBar
-from pyfile.threadpool import *
+from pyfile.threadpool import ThreadPool
 
+#: flag for error during :py:func:`update_all_files`
+#: TODO: make this a nonlocal in py3
 global_error = False
 
-def update_all_files(file_name = 'file', magdir = 'Magdir', file_binary = 'file'):
 
-	print_file_info(file_binary)
+def update_all_files(file_name='file', magdir='Magdir', file_binary='file'):
+    """
+    Run file(1) on all entries in db folder, save result in same folder
 
-	split_patterns(magdir, file_name)
-	compile_patterns(file_name, file_binary)
-	compiled = is_compilation_supported(file_name, file_binary)
+    Performs:
+    (1) print a quick info on used file(1) binary
+    (2) compiles patterns
+    (3) Run in parallel on each db entry using a ThreadPool:
+    (3a) get full metadata for file
+    (3b) save metadata in db
+    """
+    print_file_info(file_binary)
 
-	entries = get_stored_files("db")
-	if len(entries) == 0:
-		raise ValueError('no files in db {0}'.format( os.path.join(os.getcwd(), 'db') ))
-	prog = ProgressBar(0, len(entries), 50, mode='fixed', char='#')
+    split_patterns(magdir, file_name)
+    compile_patterns(file_name, file_binary)
+    compiled = is_compilation_supported(file_name, file_binary)
 
-	def store_mimedata(data):
-		metadata = get_full_metadata(data[0], file_name, compiled, file_binary)
-		error = metadata['output'] == None
-		if not error:
-			set_stored_metadata(data[0], metadata)
-			return (data[0], data[1], False)
-		else:
-			return (data[0], data[1], metadata['err'])   # err=(cmd, output)
-	
-	def data_stored(data):
-		entry, hide, error = data
-		if error:
-			global global_error
-			global_error = True
-			print 'ERROR for', entry
-			print 'ERROR running command', error[0]
-			print 'ERROR produced output', error[1]
-			return
-		prog.increment_amount()
-		if not hide:
-			print prog, "Updating database", '\r',
-			sys.stdout.flush()
+    entries = get_stored_files("db")
+    if not entries:
+        db_dir = os.path.join(os.getcwd(), 'db')     # TODO: not always correct
+        raise ValueError('no files in db {0}'.format(db_dir))
+    prog = ProgressBar(0, len(entries), 50, mode='fixed', char='#')
 
-	pool = ThreadPool(4)   # create this here, so program exits if error occurs earlier
-	for i,entry in enumerate(entries):
-		# Insert tasks into the queue and let them run
-		pool.queueTask(store_mimedata, (entry, i % 2), data_stored)
-		if global_error:
-			print "Error when executing File binary"
-			break
+    def store_mimedata(data):
+        """Compute file output for single entry, save it."""
+        entry, hide = data
+        metadata = get_full_metadata(entry, file_name, compiled, file_binary)
+        if metadata['output'] is None:
+            return (entry, hide, metadata['err'])   # err=(cmd, output)
+        else:
+            set_stored_metadata(entry, metadata)
+            return (entry, hide, False)
 
-	# When all tasks are finished, allow the threads to terminate
-	pool.joinAll()
-	print ''
-	return global_error
+    def data_stored(data):
+        """Update progress bar after each entry or print error and set flag."""
+        entry, hide, error = data
+        if error:
+            global global_error
+            global_error = True
+            print('ERROR for', entry)
+            print('ERROR running command', error[0])
+            print('ERROR produced output', error[1])
+            return
+        prog.increment_amount()
+        if not hide:
+            print(prog, "Updating database", end='\r')
+            sys.stdout.flush()
+
+    # create thread pool here, so program exits if error occurs earlier
+    n_threads = 4   # TODO: probably need this instead of 2 in queueTasks
+    pool = ThreadPool(n_threads)
+    for index, entry in enumerate(entries):
+        # Insert tasks into the queue and let them run
+        pool.queueTask(store_mimedata, args=(entry, index % 2),
+                       taskCallback=data_stored)
+        if global_error:
+            print("Error when executing File binary")
+            break
+
+    # When all tasks are finished, allow the threads to terminate
+    pool.joinAll()
+    print('')
+    return global_error
+
 
 def usage(ecode):
-	print "Updates database."
-	print sys.argv[0] + " [-v <version_name>] [-m <magdir>] [-b <file-binary>]"
-	print "  Default path_to_magdir_directory='Magdir'"
-	print "  Default version_name='file'"
-	print "Examples:"
-	print "  " + sys.argv[0] + " -v file-5.07;"
-	print "  " + sys.argv[0] + " -v file-5.04-my-version -m file-5.04/magic/Magdir;"
-	sys.exit(ecode)
+    """Print usage information and exit with given exit code."""
+    print("Updates database.")
+    print(sys.argv[0] +
+          " [-v <version_name>] [-m <magdir>] [-b <file-binary>]")
+    print("  Default path_to_magdir_directory='Magdir'")
+    print("  Default version_name='file'")
+    print("Examples:")
+    print("  " + sys.argv[0] + " -v file-5.07;")
+    print("  " + sys.argv[0] +
+          " -v file-5.04-my-version -m file-5.04/magic/Magdir;")
+    sys.exit(ecode)
+
+
+def main():
+    """Parse arguments and call :py:func:`update_all_files`."""
+    file_name = 'file'
+    file_binary = "file"
+    magdir = "Magdir"
+    args = sys.argv[1:]
+
+    optlist, args = getopt.getopt(args, 'b:hm:v:')
+
+    for option, argument in optlist:
+        if option == '-b':
+            file_binary = argument
+        elif option == '-m':
+            magdir = argument
+        elif option == '-h':
+            usage(0)
+        elif option == '-v':
+            file_name = argument
+        else:
+            usage(1)
+
+    sys.exit(update_all_files(file_name, magdir, file_binary))
+
 
 # run this only if started as script from command line
 if __name__ == '__main__':
-	file_name = 'file'
-	file_binary = "file"
-	magdir = "Magdir"
-	args = sys.argv[1:]
-
-	optlist, args = getopt.getopt(args, 'b:hm:v:')
-
-	for o, a in optlist:
-		if o == '-b':
-			file_binary = a
-		elif o == '-m':
-			magdir = a
-		elif o == '-h':
-			usage(0)
-		elif o == '-v':
-			file_name = a
-		else:
-			usage(1)
-
-	sys.exit(update_all_files(file_name, magdir, file_binary))
+    main()
