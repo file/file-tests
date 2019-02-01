@@ -1,0 +1,3 @@
+AUTHOR: Christos Zoulas <christos@zoulas.com>
+URL: Created it myself
+LICENSE: public domain

@@ -1,0 +1,40 @@
+#!/bin/sh
+# Test program code [1].
+
+check() {
+	../../../file -m ../../../../magic/magic.mgc "$@"
+}
+
+cat << EOF > f1.c
+void main(void)
+{
+	int i = 69;
+	i = i;
+	return;
+}
+EOF
+
+attr() {
+cat << EOF > $output.source.txt
+AUTHOR: Christos Zoulas <christos@zoulas.com>
+URL: Created it myself
+LICENSE: public domain
+EOF
+}
+
+run() {
+	local flags=$1
+	local output=$2
+	local pie=$3
+	set -x
+	gcc -shared -fpie $flags f1.c -o $output
+	set +x
+	check $output
+	attr $output
+}
+
+
+run "" library.so no
+run "-pie" pie.out yes
+run "-Wl,-z,now" library-now.so no
+run "-pie -Wl,-z,now" pie-now.out yes
