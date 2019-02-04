@@ -176,6 +176,7 @@ def get_stored_files(dir_name, subdir=True, *args):
                 if not dirfile.endswith(DB_FILE_SUFFIX) and \
                         not dirfile.endswith(".source.txt"):
                     file_list.append(dirfile)
+                # TODO: also exclude .json (or .json.json in dir "json")
             else:
                 if os.path.splitext(dirfile)[1][1:] in args:
                     file_list.append(dirfile)
