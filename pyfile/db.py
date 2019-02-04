@@ -20,23 +20,28 @@
 
 
 import os
-import pickle
+import json
 import difflib
 import mimetypes
 from cStringIO import StringIO
 mimetypes.init()
 
 
+# suffix for files containing saved metadata
+DB_FILE_SUFFIX = '.json'
+
+
 def get_stored_metadata(filename):
     """Retrieve metadata stored for given entry in db."""
-    with open(filename + ".pickle", 'r') as file_handle:
-        return pickle.load(file_handle)
+    with open(filename + DB_FILE_SUFFIX, 'rt') as file_handle:
+        return json.load(file_handle)
 
 
 def set_stored_metadata(filename, metadata):
     """Store given metadata for given entry in db."""
-    with open(filename + ".pickle", 'w') as file_handle:
-        pickle.dump(metadata, file_handle)
+    with open(filename + DB_FILE_SUFFIX, 'wt') as file_handle:
+        json.dump(metadata, file_handle, check_circular=False, indent=4,
+                  sort_keys=True)
 
 
 def is_regression(meta1, meta2, exact=False, ratio=0.7):
@@ -168,7 +173,7 @@ def get_stored_files(dir_name, subdir=True, *args):
         dirfile = os.path.join(dir_name, file_name)
         if os.path.isfile(dirfile):
             if not args:
-                if not dirfile.endswith("pickle") and \
+                if not dirfile.endswith(DB_FILE_SUFFIX) and \
                         not dirfile.endswith(".source.txt"):
                     file_list.append(dirfile)
             else:
