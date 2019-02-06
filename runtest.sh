@@ -30,7 +30,7 @@ SLEEP_TIME="1234567890123456789012345678901234567890123456789012345678"
 
 #    rlPhaseStartTest
 # this test tests one file at time
-	for f in `find db/ -type f |grep -v ".pickle$"`; do  
+	for f in `find db/ -type f |grep -v ".json$"`; do  
 	    python test-file.py $f
 	done
 # this tests all files in 4 threads and is much more faster

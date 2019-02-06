@@ -1,4 +1,4 @@
-*.pickle
+/db/*/*.json
 *~
 *.pyc
 Magdir

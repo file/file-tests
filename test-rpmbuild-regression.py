@@ -20,7 +20,6 @@ import os
 import sys
 import errno
 from subprocess import Popen, PIPE
-import pickle
 import mimetypes
 import difflib
 from pyfile import *
@@ -59,7 +58,7 @@ def test_attr(attr):
 
 	if regex and path:
 		for f in os.listdir(path):
-			if f.endswith("pickle"):
+			if f.endswith("json"):
 				continue
 			full_path = os.path.join(path, f)
 			output = get_simple_metadata(full_path)['output']
