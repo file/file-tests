@@ -20,7 +20,6 @@ import os
 import sys
 import errno
 from subprocess import Popen, PIPE
-import pickle
 import mimetypes
 import difflib
 from pyfile import *
