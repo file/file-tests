@@ -58,7 +58,7 @@ $ sudo rpm -U my-file.prm my-file-libs.rpm ...
 ------------------------------
 
 Fast regression test tests the output of the currently installed File and
-compares it to the one stored in db/*/*.pickle files. If there's a significant
+compares it to the one stored in db/*/*.json files. If there's a significant
 difference (see HOW DOES IT WORK) between the output, it's showed as FAIL.
 
 $ python fast-regression-test.py
@@ -118,12 +118,12 @@ Then all files in the db directory are detected. During the detection,
 particular pattern responsible for detection is found using the bisection
 method.
 
-All metadata are stored into ./db/*/*.pickle file.
+All metadata are stored into ./db/*/*.json file.
 
 3.2: fast-regression-test.py script:
 ------------------------------------
 
-This script simply gets metadata stored in the ./db/*/*.pickle files and
+This script simply gets metadata stored in the ./db/*/*.json files and
 compares them with the output of the current File version.
 
 In non-exact mode, regressions are detected using the Ratcliff/Obershelp
