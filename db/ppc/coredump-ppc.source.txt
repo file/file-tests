@@ -1,0 +1,3 @@
+AUTHOR: Frantisek Sumsal <fsumsal@redhat.com>
+URL: Created if myself
+LICENSE: public domain
