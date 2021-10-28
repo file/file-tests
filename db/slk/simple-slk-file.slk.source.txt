@@ -1,0 +1,3 @@
+AUTHOR: Philippe Lagadec
+URL: http://www.decalage.info/
+LICENSE: MIT
