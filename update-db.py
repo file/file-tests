@@ -34,7 +34,8 @@ from pyfile.threadpool import ThreadPool
 global_error = False
 
 
-def update_all_files(file_name='file', magdir='Magdir', file_binary='file'):
+def update_all_files(file_name='file', magdir='Magdir', file_binary='file',
+                     skip_patterns=False):
     """
     Run file(1) on all entries in db folder, save result in same folder
 
@@ -47,9 +48,10 @@ def update_all_files(file_name='file', magdir='Magdir', file_binary='file'):
     """
     print_file_info(file_binary)
 
-    split_patterns(magdir, file_name)
-    compile_patterns(file_name, file_binary)
-    compiled = is_compilation_supported(file_name, file_binary)
+    if not skip_patterns:
+        split_patterns(magdir, file_name)
+        compile_patterns(file_name, file_binary)
+        compiled = is_compilation_supported(file_name, file_binary)
 
     entries = get_stored_files("db")
     if not entries:
@@ -60,7 +62,10 @@ def update_all_files(file_name='file', magdir='Magdir', file_binary='file'):
     def store_mimedata(data):
         """Compute file output for single entry, save it."""
         entry, hide = data
-        metadata = get_full_metadata(entry, file_name, compiled, file_binary)
+        if skip_patterns:
+            metadata = get_partial_metadata(entry, file_name, file_binary)
+        else:
+            metadata = get_full_metadata(entry, file_name, compiled, file_binary)
         if metadata['output'] is None:
             return (entry, hide, metadata['err'])   # err=(cmd, output)
         else:
@@ -118,9 +123,10 @@ def main():
     file_name = 'file'
     file_binary = "file"
     magdir = "Magdir"
+    skip_patterns = False
     args = sys.argv[1:]
 
-    optlist, args = getopt.getopt(args, 'b:hm:v:')
+    optlist, args = getopt.getopt(args, 'b:hm:v:s')
 
     for option, argument in optlist:
         if option == '-b':
@@ -131,10 +137,12 @@ def main():
             usage(0)
         elif option == '-v':
             file_name = argument
+        elif option == '-s':
+            skip_patterns = True
         else:
             usage(1)
 
-    sys.exit(update_all_files(file_name, magdir, file_binary))
+    sys.exit(update_all_files(file_name, magdir, file_binary, skip_patterns=skip_patterns))
 
 
 # run this only if started as script from command line

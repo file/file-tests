@@ -260,6 +260,38 @@ def compile_patterns(file_name="file", file_binary="file"):
     print("")
 
 
+def get_partial_metadata(infile, file_name, file_binary="file"):
+    """
+    plain output of file ("output") and mime type ("mime").
+
+    As opposed to :py:func:`get_full_metadata` does not include the relevant
+    line in magic file ("pattern"), which makes this much faster and easier
+    and avoids the trouble of compiling lots of patterns that need lots of
+    disc space.
+    """
+    cmd = file_binary + " -b " + infile
+    popen = Popen(cmd, shell=True, bufsize=4096, stdout=PIPE)
+    pipe = popen.stdout
+    out_curr = pipe.read()
+    if popen.wait() != 0:
+        return dict(output=None, mime=None, pattern=None, suffix=None,
+                    err=(cmd, out_curr.strip()))
+
+    cmd = file_binary + " -bi " + infile
+    popen = Popen(cmd, shell=True, bufsize=4096, stdout=PIPE)
+    pipe = popen.stdout
+    mime = pipe.read()
+    if popen.wait() != 0:
+        return dict(output=None, mime=None, pattern=None, suffix=None,
+                    err=(cmd, mime.strip()))
+    index = infile.find('.')
+    if index == -1:
+        suffix = ""
+    else:
+        suffix = infile[index:]
+    return dict(output=out_curr, mime=mime, pattern="", suffix=suffix)
+
+
 def get_full_metadata(infile, file_name="file", compiled=True,
                       file_binary="file"):
     """
