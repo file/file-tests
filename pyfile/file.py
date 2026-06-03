@@ -24,6 +24,8 @@ import os
 import sys
 import errno
 import subprocess
+import shutil
+import shlex
 import hashlib
 import re
 from tqdm import tqdm
@@ -31,10 +33,12 @@ from tqdm import tqdm
 def print_file_info(file_binary='file'):
     """`print()` absolute path and version of given `file(1)` binary."""
 
+    base_cmd = shlex.split(file_binary)
+
     if not any(file_binary.startswith(p) for p in ("/", "./", "../")):
-        resolved_path = shutil.which(file_binary)
+        resolved_path = shutil.which(base_cmd[0])
         if not resolved_path:
-            raise ValueError(f"could not find '{file_binary}' in PATH")
+            raise ValueError(f"could not find '{base_cmd[0]}' in PATH")
         output_which = resolved_path.encode('utf-8')
     else:
         output_which = file_binary.encode('utf-8')
@@ -42,7 +46,7 @@ def print_file_info(file_binary='file'):
     try:
         # Pass args as a list instead of a string to avoid shell=True
         result = subprocess.run(
-            [file_binary, "--version"],
+            [*base_cmd, "--version"],
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
             check=False # We handle return codes manually below
@@ -74,11 +78,12 @@ def mkdir_p(path):
 
 def get_file_output(filename, binary="file"):
     """Run file(1) binary on given filename, return output."""
+    base_cmd = shlex.split(binary)
     try:
         # Pass arguments as a list to avoid shell parsing issues with filenames
         # subprocess.run handles reading both stdout and stderr concurrently without deadlocks
         result = subprocess.run(
-            [binary, "-b", filename],
+            [*base_cmd, "-b", filename],
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
             check=False
@@ -97,11 +102,12 @@ def get_file_output(filename, binary="file"):
 
 def get_file_mime(filename, binary="file"):
     """Run file(1) binary with mime option on given filename, return output."""
+    base_cmd = shlex.split(binary)
     try:
         # Passing arguments as a list removes shell=True and handles spaces/special characters safely.
         # subprocess.run dynamically drains stdout and stderr simultaneously to prevent deadlocks.
         result = subprocess.run(
-            [binary, "-ib", filename],
+            [*base_cmd, "-ib", filename],
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
             check=False
@@ -283,8 +289,6 @@ def compile_patterns(file_name="file", file_binary="file"):
         prog.update(1)
     print("")
 
-import subprocess
-
 def get_partial_metadata(infile, file_name, file_binary="file"):
     """
     plain output of file ("output") and mime type ("mime").
@@ -295,7 +299,8 @@ def get_partial_metadata(infile, file_name, file_binary="file"):
     disc space.
     """
     # --- 1. Get plain file description (-b) ---
-    cmd1 = [file_binary, "-b", infile]
+    base_cmd = shlex.split(file_binary)
+    cmd1 = [*base_cmd, "-b", infile]
     try:
         result1 = subprocess.run(cmd1, stdout=subprocess.PIPE, stderr=subprocess.PIPE, check=False)
     except Exception as e:
@@ -307,7 +312,7 @@ def get_partial_metadata(infile, file_name, file_binary="file"):
                     err=(" ".join(cmd1), out_curr.strip()))
 
     # --- 2. Get mime type (-bi) ---
-    cmd2 = [file_binary, "-bi", infile]
+    cmd2 = [*base_cmd, "-bi", infile]
     try:
         result2 = subprocess.run(cmd2, stdout=subprocess.PIPE, stderr=subprocess.PIPE, check=False)
     except Exception as e:
@@ -337,10 +342,6 @@ def get_partial_metadata(infile, file_name, file_binary="file"):
         suffix=suffix.decode('utf-8', errors='replace') if isinstance(suffix, bytes) else suffix
     )
 
-import os
-import hashlib
-import subprocess
-
 def get_full_metadata(infile, file_name="file", compiled=True, file_binary="file"):
     """
     file-output plus binary search to find the relevant line in magic file.
@@ -362,6 +363,7 @@ def get_full_metadata(infile, file_name="file", compiled=True, file_binary="file
 
     os.makedirs(".mgc_temp", exist_ok=True)
 
+    base_cmd = shlex.split(file_binary)
     # Divide and conquer: find the relevant pattern
     idx_left = 0
     idx_rigt = len(files) - 1
@@ -372,7 +374,7 @@ def get_full_metadata(infile, file_name="file", compiled=True, file_binary="file
         magic_file_path = f".mgc_temp/{file_binary_hash}/.find-magic.tmp.{idx_curr}{compiled_suffix}"
 
         # Safe array arguments instead of shell strings
-        cmd = [file_binary, "-b", infile, "-m", magic_file_path]
+        cmd = [*base_cmd, "-b", infile, "-m", magic_file_path]
 
         try:
             result = subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, check=False)
@@ -411,9 +413,9 @@ def get_full_metadata(infile, file_name="file", compiled=True, file_binary="file
             # --- Mime check block ---
             magic_mime_path = f"{os.path.dirname(file_binary)}/../magic/magic.mime.mgc"
             if os.path.exists(magic_mime_path):
-                cmd = [file_binary, "-bi", infile, "-m", f"{os.path.dirname(file_binary)}/../magic/magic"]
+                cmd = [*base_cmd, "-bi", infile, "-m", f"{os.path.dirname(file_binary)}/../magic/magic"]
             else:
-                cmd = [file_binary, "-bi", infile, "-m", magic_file_path]
+                cmd = [*base_cmd, "-bi", infile, "-m", magic_file_path]
 
             try:
                 mime_result = subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, check=False)
