@@ -27,7 +27,7 @@ import sys
 import getopt
 from tqdm import tqdm
 from pyfile.db import get_stored_files, get_stored_metadata, is_regression, get_diff
-from pyfile.file import print_file_info, get_simple_metadata, split_patterns
+from pyfile.file import print_file_info, get_simple_metadata, split_patterns, compile_patterns
 from pyfile.threadpool import ThreadPool
 
 #: flag for error during :py:func:`update_all_files`

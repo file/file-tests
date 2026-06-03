@@ -130,8 +130,7 @@ def _split_patterns(pattern_id=0, magdir="Magdir", file_name="file",
     if not files:
         raise ValueError('no files found in Magdir {0}'
                          .format(os.path.join(os.getcwd(), magdir)))
-    print(files)
-    prog = tqdm(total=len(files), bar_format='{l_bar}{bar:50}{r_bar}', ascii='#')
+    prog = tqdm(total=len(files), bar_format='{l_bar}{bar:50}{r_bar}', ascii=' #')
     prog.set_description("Splitting patterns")
     for loop_file_name in files:
         mfile = os.path.join(magdir, loop_file_name)
@@ -200,7 +199,7 @@ def compile_patterns(file_name="file", file_binary="file"):
 
     This requires quite some space on disc.
     """
-    file_binary_hash = hashlib.sha224(file_name).hexdigest()
+    file_binary_hash = hashlib.sha224(file_name.encode()).hexdigest()
     magdir = ".mgc_temp/" + file_binary_hash + "/output"
     files = os.listdir(magdir)
     if not files:
@@ -210,7 +209,7 @@ def compile_patterns(file_name="file", file_binary="file"):
     mkdir_p(".mgc_temp")
     mkdir_p(".mgc_temp/" + file_binary_hash)
     mkdir_p(".mgc_temp/" + file_binary_hash + "/tmp")
-    prog = tqdm(total=len(files), bar_format='{l_bar}{bar:50}{r_bar}', ascii='#')
+    prog = tqdm(total=len(files), bar_format='{l_bar}{bar:50}{r_bar}', ascii=' #')
     prog.set_description("Compiling patterns")
 
     for file_index, loop_file_name in enumerate(files):
@@ -303,7 +302,7 @@ def get_full_metadata(infile, file_name="file", compiled=True,
     compiled_suffix = ".mgc"
     if not compiled:
         compiled_suffix = ""
-    file_binary_hash = hashlib.sha224(file_name).hexdigest()
+    file_binary_hash = hashlib.sha224(file_name.encode()).hexdigest()
     magdir = ".mgc_temp/" + file_binary_hash + "/output"
     files = os.listdir(magdir)
     files.sort(key=lambda x: [int(x)])
@@ -388,7 +387,7 @@ def get_full_metadata(infile, file_name="file", compiled=True,
 
 def is_compilation_supported(file_name="file", file_binary="file"):
     """Determine whether data from :py:func:`compile_patterns` is available."""
-    file_binary_hash = hashlib.sha224(file_name).hexdigest()
+    file_binary_hash = hashlib.sha224(file_name.encode()).hexdigest()
     if os.system(file_binary + " /bin/sh -m .mgc_temp/" + file_binary_hash +
                  "/.find-magic.tmp.0.mgc > /dev/null") != 0:
         print('')
