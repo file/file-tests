@@ -23,8 +23,9 @@ from __future__ import print_function
 
 import sys
 import getopt
-import mutex
-from pyfile import *
+import threading
+from pyfile.db import get_stored_files, get_stored_metadata, is_regression, get_diff
+from pyfile.file import print_file_info, get_simple_metadata
 from pyfile.threadpool import *
 
 
@@ -40,7 +41,7 @@ def test_all_files(exact=False, binary="file"):
 
     print_file_info(binary)
 
-    print_lock = mutex.mutex()
+    print_lock = threading.Lock()
 
     entries = sorted(get_stored_files("db"))
 
@@ -68,11 +69,11 @@ def test_all_files(exact=False, binary="file"):
         if data[0] == "F":
             global ret
             ret = 1
-        print_lock.unlock()
 
     def data_stored(data):
         """Acquire print lock and call :py:function:`data_print`."""
-        print_lock.lock(data_print, data)
+        with print_lock:
+            data_print(data)
 
     # create here so program exits if error occurs earlier
     n_threads = 1

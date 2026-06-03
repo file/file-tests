@@ -23,7 +23,6 @@ import os
 import json
 import difflib
 import mimetypes
-from cStringIO import StringIO
 mimetypes.init()
 
 
@@ -79,8 +78,8 @@ def is_regression(meta1, meta2, exact=False, ratio=0.7):
                     #          % (meta2['output'], meta1['output'])
                     return True
 
-    mime = meta2['mime'].split(":")[-1].split(";")[0].strip()
-    old_mime = meta1['mime'].split(":")[-1].split(";")[0].strip()
+    mime = meta2['mime'].split(':')[-1].split(';')[0].strip()
+    old_mime = meta1['mime'].split(':')[-1].split(';')[0].strip()
 
     # if old_mime is empty, then previous version of File didn't know that
     # filetype.  we will hope that new mime is right.
@@ -125,8 +124,8 @@ def get_diff(meta1, meta2, exact=False, ratio=0.7):
                     text = "Expected :%sGot      :%s" % (meta1['output'],
                                                          meta2['output'])
 
-    mime = meta2['mime'].split(":")[-1].split(";")[0].strip()
-    old_mime = meta1['mime'].split(":")[-1].split(";")[0].strip()
+    mime = meta2['mime'].split(':')[-1].split(';')[0].strip()
+    old_mime = meta1['mime'].split(':')[-1].split(';')[0].strip()
 
     want_mime_diff = False
 
@@ -147,8 +146,8 @@ def get_diff(meta1, meta2, exact=False, ratio=0.7):
         if ('pattern' in meta1) and ('pattern' in meta2) and \
                 meta1['pattern'] != "" and meta2['pattern'] != "":
             for line in difflib.unified_diff(
-                    StringIO(meta1['pattern']).readlines(),
-                    StringIO(meta2['pattern']).readlines()):
+                    meta1['pattern'].splitlines(keepends=True),
+                    meta2['pattern'].splitlines(keepends=True)):
                 text += line
     return text
 

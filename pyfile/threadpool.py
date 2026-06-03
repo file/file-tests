@@ -1,13 +1,6 @@
 import threading
 from time import sleep
 
-# Ensure booleans exist (not needed for Python 2.2.1 or higher)
-try:
-    True
-except NameError:
-    False = 0
-    True = not False
-
 class ThreadPool:
 
     """Flexible thread pool class.  Creates a pool of threads, then
@@ -173,28 +166,27 @@ def usage_example():
     # then sort them
     
     def sortTask(data):
-        print "SortTask starting for ", data
+        print("SortTask starting for %s", data)
         numbers = range(data[0], data[1])
         for a in numbers:
             rnd = randrange(0, len(numbers) - 1)
             a, numbers[rnd] = numbers[rnd], a
-        print "SortTask sorting for ", data
+        print("SortTask sorting for %s", data)
         numbers.sort()
-        print "SortTask done for ", data
+        print("SortTask done for %s", data)
         return "Sorter ", data
 
     # Sample task 2: just sleep for a number of seconds.
 
     def waitTask(data):
-        print "WaitTask starting for ", data
-        print "WaitTask sleeping for %d seconds" % data
+        print("WaitTask sleeping for %d seconds", data)
         sleep(data)
         return "Waiter", data
 
     # Both tasks use the same callback
 
     def taskCallback(data):
-        print "Callback called for", data
+        print("Callback called for %s", data)
 
     # Create a pool with three worker threads
 

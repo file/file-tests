@@ -25,8 +25,9 @@ from __future__ import print_function
 import os
 import sys
 import getopt
-from pyfile import *
-from pyfile.progressbar import ProgressBar
+from tqdm import tqdm
+from pyfile.db import get_stored_files, get_stored_metadata, is_regression, get_diff
+from pyfile.file import print_file_info, get_simple_metadata, split_patterns
 from pyfile.threadpool import ThreadPool
 
 #: flag for error during :py:func:`update_all_files`
@@ -57,7 +58,12 @@ def update_all_files(file_name='file', magdir='Magdir', file_binary='file',
     if not entries:
         db_dir = os.path.join(os.getcwd(), 'db')     # TODO: not always correct
         raise ValueError('no files in db {0}'.format(db_dir))
-    prog = ProgressBar(0, len(entries), 50, mode='fixed', char='#')
+        nentries = 1
+    else:
+        nentries = len(entries)
+    prog = tqdm(total=nentries, bar_format='{l_bar}{bar:50}{r_bar}', ascii='#')
+    prog.set_description("Updating database")
+
 
     def store_mimedata(data):
         """Compute file output for single entry, save it."""
@@ -82,10 +88,8 @@ def update_all_files(file_name='file', magdir='Magdir', file_binary='file',
             print('ERROR running command', error[0])
             print('ERROR produced output', error[1])
             return
-        prog.increment_amount()
         if not hide:
-            print(prog, "Updating database", end='\r')
-            sys.stdout.flush()
+            prog.update(1)
 
     # create thread pool here, so program exits if error occurs earlier
     n_threads = 4   # TODO: probably need this instead of 2 in queueTasks

@@ -26,7 +26,7 @@ import errno
 from subprocess import Popen, PIPE
 import hashlib
 import re
-from progressbar import ProgressBar
+from tqdm import tqdm
 
 
 def print_file_info(file_binary='file'):
@@ -74,7 +74,7 @@ def get_file_output(filename, binary="file"):
     if popen.wait() != 0:
         return "Error while calling file, output: " + str(output) + \
                str(output_err)
-    return output
+    return output.decode('utf-8')
 
 
 def get_file_mime(filename, binary="file"):
@@ -87,7 +87,7 @@ def get_file_mime(filename, binary="file"):
     if popen.wait() != 0:
         return "Error while calling file, output: " + str(output) + \
                str(output_err)
-    return output
+    return output.decode('utf-8')
 
 
 def get_simple_metadata(filename, binary="file"):
@@ -121,7 +121,7 @@ def _split_patterns(pattern_id=0, magdir="Magdir", file_name="file",
 
     Returns number of pattern files thus created.
     """
-    file_binary_hash = hashlib.sha224(file_name).hexdigest()
+    file_binary_hash = hashlib.sha224(file_name.encode()).hexdigest()
     outputdir = ".mgc_temp/" + file_binary_hash + "/output"
     mkdir_p(outputdir)
 
@@ -130,22 +130,22 @@ def _split_patterns(pattern_id=0, magdir="Magdir", file_name="file",
     if not files:
         raise ValueError('no files found in Magdir {0}'
                          .format(os.path.join(os.getcwd(), magdir)))
-    prog = ProgressBar(0, len(files), 50, mode='fixed', char='#')
+    print(files)
+    prog = tqdm(total=len(files), bar_format='{l_bar}{bar:50}{r_bar}', ascii='#')
+    prog.set_description("Splitting patterns")
     for loop_file_name in files:
         mfile = os.path.join(magdir, loop_file_name)
         if os.path.isdir(mfile):
             continue
         buff = ""
         in_pattern = False
-        prog.increment_amount()
-        print(prog, "Splitting patterns", end='\r')
-        sys.stdout.flush()
+        prog.update(1)
         with open(mfile, "r") as reader:
             lines = reader.readlines()
         for line_idx, line in enumerate(lines):
             if line.strip().startswith("#") or not line.strip():
                 continue
-            # print(line.strip()
+            # print(line.strip())
             if line.strip()[0].isdigit() or \
                     (line.strip()[0] == '-' and line.strip()[1].isdigit()):
                 # start of next pattern. first write finished pattern to file
@@ -210,7 +210,8 @@ def compile_patterns(file_name="file", file_binary="file"):
     mkdir_p(".mgc_temp")
     mkdir_p(".mgc_temp/" + file_binary_hash)
     mkdir_p(".mgc_temp/" + file_binary_hash + "/tmp")
-    prog = ProgressBar(0, len(files), 50, mode='fixed', char='#')
+    prog = tqdm(total=len(files), bar_format='{l_bar}{bar:50}{r_bar}', ascii='#')
+    prog.set_description("Compiling patterns")
 
     for file_index, loop_file_name in enumerate(files):
         out_file = ".mgc_temp/" + file_binary_hash + "/.find-magic.tmp." + \
@@ -254,9 +255,7 @@ def compile_patterns(file_name="file", file_binary="file"):
                     raise ValueError('moving tmp.mgc to {0} failed with code '
                                      '{1}!'.format(out_file, ret_code))
             # os.chdir("..")
-        prog.increment_amount()
-        print(prog, "Compiling patterns", end='\r')
-        sys.stdout.flush()
+        prog.update(1)
     print("")
 
 
