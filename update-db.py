@@ -26,12 +26,11 @@ import os
 import sys
 import getopt
 from tqdm import tqdm
-from pyfile.db import get_stored_files, get_stored_metadata, is_regression, get_diff
-from pyfile.file import print_file_info, get_simple_metadata, split_patterns, compile_patterns
-from pyfile.threadpool import ThreadPool
+from pyfile.db import get_stored_files, get_stored_metadata, is_regression, get_diff, set_stored_metadata
+from pyfile.file import print_file_info, get_simple_metadata, split_patterns, compile_patterns, is_compilation_supported, get_full_metadata
+from multiprocessing.pool import ThreadPool
 
 #: flag for error during :py:func:`update_all_files`
-#: TODO: make this a nonlocal in py3
 global_error = False
 
 
@@ -61,7 +60,8 @@ def update_all_files(file_name='file', magdir='Magdir', file_binary='file',
         nentries = 1
     else:
         nentries = len(entries)
-    prog = tqdm(total=nentries, bar_format='{l_bar}{bar:50}{r_bar}', ascii='#')
+    visible_tasks_count = sum(1 for i in range(len(entries)) if not (i % 2))
+    prog = tqdm(total=visible_tasks_count, bar_format='{l_bar}{bar:50}{r_bar}', ascii=' #')
     prog.set_description("Updating database")
 
 
@@ -72,38 +72,42 @@ def update_all_files(file_name='file', magdir='Magdir', file_binary='file',
             metadata = get_partial_metadata(entry, file_name, file_binary)
         else:
             metadata = get_full_metadata(entry, file_name, compiled, file_binary)
+
         if metadata['output'] is None:
-            return (entry, hide, metadata['err'])   # err=(cmd, output)
+            # Return the error back to the main thread safely
+            return {"entry": entry, "hide": hide, "error": metadata['err']}
         else:
             set_stored_metadata(entry, metadata)
-            return (entry, hide, False)
+            return {"entry": entry, "hide": hide, "error": None}
 
-    def data_stored(data):
-        """Update progress bar after each entry or print error and set flag."""
-        entry, hide, error = data
-        if error:
-            global global_error
-            global_error = True
-            print('ERROR for', entry)
-            print('ERROR running command', error[0])
-            print('ERROR produced output', error[1])
-            return
-        if not hide:
-            prog.update(1)
+    tasks = [(entry, index % 2) for index, entry in enumerate(entries)]
+    global_error = False
 
-    # create thread pool here, so program exits if error occurs earlier
-    n_threads = 4   # TODO: probably need this instead of 2 in queueTasks
-    pool = ThreadPool(n_threads)
-    for index, entry in enumerate(entries):
-        # Insert tasks into the queue and let them run
-        pool.queueTask(store_mimedata, args=(entry, index % 2),
-                       taskCallback=data_stored)
-        if global_error:
-            print("Error when executing File binary")
-            break
+    n_threads = 4
 
-    # When all tasks are finished, allow the threads to terminate
-    pool.joinAll()
+    # Use a context manager for the ThreadPool
+    with ThreadPool(n_threads) as pool:
+        # imap_unordered yields results as soon as any thread finishes
+        for result in pool.imap_unordered(store_mimedata, tasks):
+            entry = result["entry"]
+            hide = result["hide"]
+            error = result["error"]
+
+            if error:
+                global_error = True
+                print(f'\nERROR for {entry}')
+                print('ERROR running command', error[0])
+                print('ERROR produced output', error[1])
+                print("Error when executing File binary. Halting pool.")
+
+                # This forcefully stops the pool from processing remaining queued items
+                pool.terminate()
+                break
+
+            if not hide:
+                prog.update(1)
+
+    prog.close()
     print('')
     return global_error
 
